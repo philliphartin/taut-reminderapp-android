@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="serverNames">
+        <item name="live">Live Server (Ulster)</item>
+        <item name="test">Test Server (phorLoop)</item>
+    </string-array>
+    <string-array name="serverUrl">
+        <item name="live">http://193.61.148.92/api/taut/scripts/log_upload.php</item>
+        <item name="test">http://api.phorloop.com/taut/scripts/log_upload.php</item>
+    </string-array>
+
+
+</resources>

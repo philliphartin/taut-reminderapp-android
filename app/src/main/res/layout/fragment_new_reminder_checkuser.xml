@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.phorloop.tautreminders.view.activity.NewReminderActivity.FormatChoiceFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="#aecbff"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_alignParentTop="true"
+        >
+
+        <TextView
+            android:id="@+id/textView_userCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text='Is this "USERNAME"?'
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="If it is press the green button below"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        >
+
+        <Button
+            android:id="@+id/button_new_reminder_checkuser_participant"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_save"
+            android:drawableRight="@drawable/checkmark"
+            android:text="Yes"
+            android:textSize="26sp"
+            android:layout_margin="20dp"/>
+
+        <Button
+            android:id="@+id/button_new_reminder_checkuser_carer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_cancel"
+            android:drawableRight="@drawable/cross"
+            android:text="No"
+            android:textSize="26sp"
+            android:layout_below="@+id/button_new_reminder_checkuser_participant"
+            android:layout_margin="20dp"
+            />
+    </RelativeLayout>
+
+
+</RelativeLayout>

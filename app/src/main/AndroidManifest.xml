@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.phorloop.tautreminders" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:name=".controller.MyApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="DATABASE"
+            android:value="tautreminders.db" />
+        <meta-data
+            android:name="VERSION"
+            android:value="1" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.phorloop.tautreminders" />
+
+        <activity
+            android:name=".view.activity.HomeScreenActivity"
+            android:label="@string/app_name" >
+
+        </activity>
+        <activity
+            android:name=".view.activity.NewReminderActivity"
+            android:label="@string/title_activity_new_reminder"
+            android:parentActivityName=".view.activity.HomeScreenActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.phorloop.tautreminders.controller.activities.HomeSceenActivity" />
+        </activity>
+        <activity
+            android:name=".view.activity.ViewRemindersActivity"
+            android:label="@string/title_activity_view_reminder"
+            android:parentActivityName=".view.activity.HomeScreenActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.phorloop.tautreminders.controller.activities.HomeScreenActivity" />
+        </activity>
+        <activity
+            android:name=".view.activity.TestActivity"
+            android:label="@string/title_activity_test" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
