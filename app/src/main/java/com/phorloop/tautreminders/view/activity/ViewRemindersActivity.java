@@ -1,6 +1,7 @@
 package com.phorloop.tautreminders.view.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 import com.phorloop.tautreminders.R;
 import com.phorloop.tautreminders.controller.ListViewAdapter.ReminderListAdapter;
 import com.phorloop.tautreminders.controller.ListViewAdapter.ReminderListItem;
+import com.phorloop.tautreminders.controller.schedule.ReminderHelper;
+import com.phorloop.tautreminders.controller.schedule.ScheduleHelper;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import java.util.ArrayList;
@@ -26,34 +29,29 @@ import java.util.List;
  */
 public class ViewRemindersActivity extends Activity {
     private static final String LOGa = "ViewRemindersActivity";
+    private Context context = this;
 
 
     public int selectedItem = -1;
     public ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-        // called when the action mode is created; startActionMode() was called
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
             MenuInflater inflater = mode.getMenuInflater();
-            // assumes that you have "contexual.xml" menu resources
             inflater.inflate(R.menu.pressmenu_listitem, menu);
             return true;
         }
 
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
+            return false;
         }
 
-        // called when the user selects a contextual menu item
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menuitem_delete:
                     deleteItem(selectedItem);
-                    // the Action was executed, close the CAB
                     mode.finish();
                     return true;
                 case R.id.menuitem_desc:
                     showDesc(selectedItem);
-                    // the Action was executed, close the CAB
                     mode.finish();
                     return true;
                 default:
@@ -66,7 +64,6 @@ public class ViewRemindersActivity extends Activity {
             mActionMode = null;
         }
     };
-
 
     protected Object mActionMode;
     ListView listView;
@@ -84,42 +81,14 @@ public class ViewRemindersActivity extends Activity {
         listAdapter = new ReminderListAdapter(this, activeRemindersList);
         listView.setAdapter(listAdapter);
 
-        //Button Methods
-        //SHORT CLICK
+        //ListItem short click
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-
-                Log.d(LOGa, "Selected Item position: " + position);
-                Log.d(LOGa, "Selected Item id: " + id);
-
                 selectedItem = position;
-                // start the CAB using the ActionMode.Callback defined above
                 mActionMode = ViewRemindersActivity.this
                         .startActionMode(mActionModeCallback);
                 v.setSelected(true);
-
-                //Object o = listView.getItemAtPosition(position);
-                //ListItemReminder reminderData = (ListItemReminder) o;
-                //Crouton.makeText(ActivityReminderList.this, "Long Press for more options", Style.INFO).show();
-            }
-        });
-
-        //LONG click
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view,
-                                           int position, long id) {
-                if (mActionMode != null) {
-                    return false;
-                }
-
-                selectedItem = position;
-                // start the CAB using the ActionMode.Callback defined above
-                mActionMode = ViewRemindersActivity.this
-                        .startActionMode(mActionModeCallback);
-                view.setSelected(true);
-                return true;
             }
         });
     }
@@ -131,22 +100,24 @@ public class ViewRemindersActivity extends Activity {
         Log.d(LOGa, "UnixCurrentTime: " + unixCurrentTime);
 
         //Find the reminders that are currently active
-        List<Reminder> reminders = Reminder.find(Reminder.class, "active = ?", "1");
+        ReminderHelper reminderHelper = new ReminderHelper(context);
+        reminderHelper.getActiveReminders();
+        List<Reminder> reminders = reminderHelper.getActiveReminders();
 
         ArrayList results = new ArrayList();
-        for (Reminder reminder : reminders) {
 
-            ReminderListItem reminderData = new ReminderListItem();
-            reminderData.setType(reminder.getType());
-            reminderData.setTime(reminder.getTime());
-            reminderData.setDate(reminder.getDate());
-            reminderData.setRepeat(reminder.getRepeatfreq());
-            reminderData.setDesc(reminder.getDescription());
-            reminderData.setId(reminder.getId());
-            results.add(reminderData);
+        if (!reminders.isEmpty()) {
+            for (Reminder reminder : reminders) {
+                ReminderListItem reminderData = new ReminderListItem();
+                reminderData.setType(reminder.getType());
+                reminderData.setTime(reminder.getTime());
+                reminderData.setDate(reminder.getDate());
+                reminderData.setRepeat(reminder.getRepeatfreq());
+                reminderData.setDesc(reminder.getDescription());
+                reminderData.setId(reminder.getId());
+                results.add(reminderData);
+            }
         }
-
-        //adds items to list
         return results;
     }
 
@@ -163,15 +134,13 @@ public class ViewRemindersActivity extends Activity {
 
     public void deleteItem(int position) {
         try {
+            //Get object at position
             Object o = listView.getItemAtPosition(position);
-            ReminderListItem reminderData = (ReminderListItem) o;
-            //db.deleteReminder(reminderData.getId());
+            int reminderId = (int) (long) ((ReminderListItem) o).getId();
+            removeAndUnscheduleReminder(reminderId);
 
-            Reminder reminder = Reminder.findById(Reminder.class, reminderData.getId());
-            reminder.delete();
+            Toast.makeText(ViewRemindersActivity.this, "Reminder Deleted", Toast.LENGTH_SHORT).show();
 
-            //FIXME: Delete reminder fix
-            Toast.makeText(ViewRemindersActivity.this, "Reminder Deleted", Toast.LENGTH_LONG).show();
         } catch (NullPointerException npe) {
             Log.e(LOGa, "" + npe.toString());
             Toast.makeText(ViewRemindersActivity.this, "There was a problem deleting the reminder, please try again", Toast.LENGTH_LONG).show();
@@ -180,7 +149,13 @@ public class ViewRemindersActivity extends Activity {
         activeRemindersList = getListData();
         ReminderListAdapter listAdapterRefresh = new ReminderListAdapter(this, activeRemindersList);
         listView.setAdapter(listAdapterRefresh);
+    }
 
+    private void removeAndUnscheduleReminder(int reminderId){
+        ReminderHelper reminderHelper = new ReminderHelper(context);
+        ScheduleHelper scheduleHelper = new ScheduleHelper(context);
+        reminderHelper.deleteReminderWithId(reminderId);
+        scheduleHelper.unScheduleReminder(reminderId);
     }
 
     //TODO: Tracker code

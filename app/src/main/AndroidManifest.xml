@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.phorloop.tautreminders" >
+    package="com.phorloop.tautreminders">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:name=".controller.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <meta-data
             android:name="DATABASE"
             android:value="tautreminders.db" />
@@ -29,13 +33,16 @@
 
         <activity
             android:name=".view.activity.HomeScreenActivity"
-            android:label="@string/app_name" >
-
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".view.activity.NewReminderActivity"
             android:label="@string/title_activity_new_reminder"
-            android:parentActivityName=".view.activity.HomeScreenActivity" >
+            android:parentActivityName=".view.activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.phorloop.tautreminders.controller.activities.HomeSceenActivity" />
@@ -43,20 +50,22 @@
         <activity
             android:name=".view.activity.ViewRemindersActivity"
             android:label="@string/title_activity_view_reminder"
-            android:parentActivityName=".view.activity.HomeScreenActivity" >
+            android:parentActivityName=".view.activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.phorloop.tautreminders.controller.activities.HomeScreenActivity" />
         </activity>
         <activity
+            android:name=".view.activity.ReminderPopUpActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/title_activity_reminder_popup"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog"></activity>
+        <activity
             android:name=".view.activity.TestActivity"
-            android:label="@string/title_activity_test" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:label="@string/title_activity_test"></activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <!-- Register the Alarm Receiver -->
+        <receiver android:name=".controller.schedule.ReminderBroadcastReceiver" />
     </application>
-
 </manifest>

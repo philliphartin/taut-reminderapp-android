@@ -2,11 +2,10 @@ package com.phorloop.tautreminders.view.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.phorloop.tautreminders.R;
-import com.phorloop.tautreminders.controller.schedule.ReminderHelper;
 
 public class TestActivity extends Activity {
 
@@ -38,8 +37,7 @@ public class TestActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void testThis(){
-        ReminderHelper reminderHelper = new ReminderHelper();
-        reminderHelper.getNextReminder();
+    private void testThis() {
+
     }
 }

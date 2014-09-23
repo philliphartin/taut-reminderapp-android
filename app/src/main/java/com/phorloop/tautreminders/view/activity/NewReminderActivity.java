@@ -35,6 +35,7 @@ import android.widget.TimePicker;
 
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.controller.schedule.ReminderHelper;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import org.joda.time.DateTime;
@@ -838,7 +839,7 @@ public class NewReminderActivity extends Activity {
      */
     public static class ConfirmDetailsFragment extends Fragment {
         private static final String LOGf = "ConfirmDetailsFragment";
-        private String currentFragment = fTAG_confirmdetails;
+        private static Context context;
 
         //UI elements
         LinearLayout customDaysLayout;
@@ -852,7 +853,7 @@ public class NewReminderActivity extends Activity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_new_reminder_confirmdetails, container, false);
 
-
+            context = getActivity();
             //Init UI Elements
             customDaysLayout = (LinearLayout) rootView.findViewById(R.id.linearLayout_customdays);
             customDaysText = (TextView) rootView.findViewById(R.id.textView_customdays);
@@ -963,8 +964,8 @@ public class NewReminderActivity extends Activity {
                 reminder.setActive(1);
 
                 //Save Reminder
-                Reminder reminderToSave = new Reminder(reminder);
-                reminderToSave.save();
+                ReminderHelper reminderHelper = new ReminderHelper(context);
+                reminderHelper.saveReminder(reminder);
             }
         }
 
@@ -974,10 +975,11 @@ public class NewReminderActivity extends Activity {
             Instant selectedInstantReminder = new Instant(reminder.getUnixtime());
             DateTime selectedDateTimeReminder = selectedInstantReminder.toDateTime();
 
-            String customRepeat = "Weekly";
             boolean[] repeatArrayDays = produceCustomRepeatArray();
 
             //Iterate through array to check if a reminder is required
+            ReminderHelper reminderHelper = new ReminderHelper(context);
+
             for (int i = 0; i < repeatArrayDays.length; i++) {
                 if (repeatArrayDays[i]) {
 
@@ -995,21 +997,19 @@ public class NewReminderActivity extends Activity {
 
                     //FORMAT DATE TO STRINGS FOR DB
                     long newTime = reminderDate.getMillis();
-                    int newTimeforDB = (safeLongToInt(newTime / 1000L));
-
-                    Log.d(LOGf, dayasText + " NewTimeforDB: " + newTimeforDB);
+                    Log.d(LOGf, dayasText + " NewTimeforDB: " + newTime);
 
                     DateTimeFormatter fmt_date = DateTimeFormat.forPattern("MM-dd-yyyy");
                     String new_date = fmt_date.print(newTime);
 
                     //Set reminder object details
+                    reminder.setRepeatfreq("Weekly");
                     reminder.setDayofweek(dayasText);
                     reminder.setDate(new_date);
-                    reminder.setUnixtime(newTimeforDB);
+                    reminder.setUnixtime(newTime);
                     reminder.setActive(1);
                     //Save Reminder
-                    Reminder reminderToSave = new Reminder(reminder);
-                    reminderToSave.save();
+                    reminderHelper.saveReminder(reminder);
                 }
             }
         }

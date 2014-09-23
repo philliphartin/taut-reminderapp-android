@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_gravity="center_horizontal"
+    android:layout_margin="10dp"
+    android:background="@drawable/layout_popup"
+    android:clickable="false"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textView_dialog_reminderpopup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="You have a new reminder"
+        android:textColor="@color/darkgrey"
+        android:textSize="16dp" />
+
+    <FrameLayout
+        android:id="@+id/layout_popupImage"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="5dp">
+
+        <ImageView
+            android:id="@+id/popupImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/info_big" />
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/textView_dialog_reminderpopup_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="4dp"
+        android:text="Type"
+        android:textColor="@color/darkgrey"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView_dialog_reminderpopup_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="4dp"
+        android:text="New Reminder!"
+        android:textColor="@color/darkgrey"
+        android:textSize="18dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/button_dialog_reminderpopup_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OK" />
+
+    </LinearLayout>
+
+</LinearLayout>
