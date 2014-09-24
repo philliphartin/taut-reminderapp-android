@@ -17,6 +17,8 @@ public class ReminderGSON {
     String createdby;
     int createdbyid;
     int active;
+    String audioFilepath;
+    long audioDuration;
 
     public ReminderGSON(Reminder reminder) {
         this.format = reminder.getFormat();
@@ -29,6 +31,8 @@ public class ReminderGSON {
         this.repeatfreq = reminder.getRepeatfreq();
         this.createdby = reminder.getCreatedby();
         this.active = reminder.getActive();
+        this.audioFilepath = reminder.getAudioFilepath();
+        this.audioDuration = reminder.getAudioDuration();
     }
 
     public String getFormat() {
@@ -117,6 +121,22 @@ public class ReminderGSON {
 
     public void setActive(int active) {
         this.active = active;
+    }
+
+    public String getAudioFilepath() {
+        return audioFilepath;
+    }
+
+    public void setAudioFilepath(String audioFilepath) {
+        this.audioFilepath = audioFilepath;
+    }
+
+    public long getAudioDuration() {
+        return audioDuration;
+    }
+
+    public void setAudioDuration(long audioDuration) {
+        this.audioDuration = audioDuration;
     }
 }
 

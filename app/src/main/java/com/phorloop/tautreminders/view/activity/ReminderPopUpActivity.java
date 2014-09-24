@@ -1,7 +1,6 @@
 package com.phorloop.tautreminders.view.activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -36,50 +35,44 @@ import java.util.Calendar;
  */
 
 public class ReminderPopUpActivity extends Activity {
+    private final static String LOG = "ReminderPopUpActivity";
+
+    //Components
     private static MediaPlayer voicePlayer;
     private static MediaPlayer notificationPlayer;
     private static AudioManager audio;
-    private static Reminder reminder;
-    private Vibrator vib;
+    private static Vibrator vib;
     private Handler myHandler = new Handler();
 
-    //Voice Reminders
-    private static String filepath;
-    private int listenCount;
-    private final String LOG = "ReminderPopUpActivity";
-
-    //HANDLER
+    //Screen delay before auto closing
     private final int delayTime = 60000;   //60secs
 
-    //Stats
-    long unixStartTime;
-    long unixPressTime;
-    int timeElapsed;
-    int batterylevel;
-    int voiceduration = 0;
+    //Reminder
+    private static Reminder reminder;
+
+    //Instance tracking
+    private static long unixTimePopUpDelivered;
+    private static int listenCount;
+    private static Boolean voicePlayerListened = false;
+
+    //Statistics to log
     Boolean userInteraction = false;
     SharedPreferences sharedPreferences;
-    private Boolean voiceListened = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        //Intialise VoicePlayer;
-        voicePlayer = new MediaPlayer();
-        voicePlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.reset();
-                Log.i(LOG, "VoicePlayer: Playback Complete");
-            }
-        });
+        //Record time that popup delivered
+        setUnixTimePopUpDelivered(getCurrentUnixTime());
 
-        //resetListenCount
-        listenCount = 0;
+        //Get reminder object from intent
+        Bundle extras = getIntent().getExtras();
+        String reminderAsJSON = extras.getString("reminder");
+        reminder = new Gson().fromJson(reminderAsJSON, Reminder.class);
 
-        //FLAGS TO TURN SCREEN ON AND UNLOCK SCREEN
+        //Flags to turn screen on and attempt to unlock keyguard
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
@@ -89,42 +82,39 @@ public class ReminderPopUpActivity extends Activity {
         getWindow().setBackgroundDrawable(new ColorDrawable(0));
         setContentView(R.layout.activity_reminderpopup);
 
-        //GET INTENT FROM LAUNCH
-        //TODO: GET BUNDLE FROM INTENT AND REBUILD REMINDER OBJECT
-        Bundle extras = getIntent().getExtras();
-        String reminderAsJSON = extras.getString("reminder");
-        reminder = new Gson().fromJson(reminderAsJSON, Reminder.class);
-
-//        //Update ActiveReminders to active=0
-//        db.acknowledgeReminder(id);
-//        db.closeDB();
-
-        //UI ELEMENTS
+        //Init UI elements
         TextView tv_desc = (TextView) findViewById(R.id.textView_dialog_reminderpopup_desc);
         TextView tv_type = (TextView) findViewById(R.id.textView_dialog_reminderpopup_type);
-        ImageView imgV = (ImageView) findViewById(R.id.popupImage);
+        ImageView imageView_reminderType = (ImageView) findViewById(R.id.popupImage);
 
-        //Get VOICE User
+        //Establish type of reminder
         if (reminder.getFormat().contains("voice")) {
-            Log.w(LOG, "VOICE REMINDER");
+            //Initialise VoicePlayer;
+            voicePlayer = new MediaPlayer();
+            voicePlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.reset();
+                    Log.i(LOG, "VoicePlayer: Playback Complete");
+                }
+            });
 
-            enableOKButton(false);
-//            /*filepath = db.getVoiceReminder(intentID).getFilepath();
-//            voiceduration = db.getVoiceReminder(intentID).getDuration();*/
+            enableOKButton(false); //Disable acknowledgment button until listened
 
-            //Set Image as GONE
-            imgV.setVisibility(View.GONE);
+            //Remove imageView and replace with play button
+            imageView_reminderType.setVisibility(View.GONE);
 
-            //Create New Button
+            //Create and init voice reminder playback button
+            setListenCount(0);
+
             Button playReminderBtn = new Button(this);
             playReminderBtn.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             playReminderBtn.setGravity(Gravity.CENTER_HORIZONTAL);
             playReminderBtn.setTextSize(20);
             playReminderBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.audio_listen, 0);
             playReminderBtn.setBackgroundResource(R.drawable.button_all);
-            int humanlength = voiceduration / 1000;
-
-            playReminderBtn.setText("Listen to Voice Reminder" + '\n' + "(" + humanlength + "secs)");
+            long audioDurationInSeconds = reminder.getAudioDuration() / 1000;
+            playReminderBtn.setText("Listen to Voice Reminder" + '\n' + "(" + audioDurationInSeconds + "secs)");
             playReminderBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -132,15 +122,13 @@ public class ReminderPopUpActivity extends Activity {
                     //Enable OK Button
                     enableOKButton(true);
                     //Stop Notification Sounds
-                    stopSoundVib();
-                    //Play Voice Reminder and record time elapsed if first play
-                    if (!voiceListened) {
-                        voiceListened = true;
-                        setTimeElapsed();
-                        playVoiceReminder();
-                    } else if (voiceListened) {
-                        playVoiceReminder();
+                    stopPopUpSoundAndVibration();
+                    //Check if voice has been listened to before.
+                    if (!voicePlayerListened) { //If not, log the time elapsed from popup to first listen.
+                        //TODO: Log object set time elapsed from popup to current time!
+                        voicePlayerListened = true; //update flag
                     }
+                    playVoiceReminder(reminder.getAudioFilepath());
                 }
             });
 
@@ -148,24 +136,17 @@ public class ReminderPopUpActivity extends Activity {
             FrameLayout frameLayout = (FrameLayout) findViewById(R.id.layout_popupImage);
             frameLayout.addView(playReminderBtn);
         } else {
-            Log.w(LOG, "BASIC REMINDER");
+            //Is a basic reminder
             enableOKButton(true);
         }
 
-        //Get Battery Percentage
-        getBatteryPercentage();
-
-        //GET CURRENT DATE AS UNIX TIME
-        Calendar calendarCurrent = Calendar.getInstance();
-        unixStartTime = calendarCurrent.getTimeInMillis();
-
         //START SOUND AND VIBRATION;
-        startSoundVib();
+        startPopUpSoundAndVibration();
 
         //TIMER METHOD
         myHandler.postDelayed(closeScreen, delayTime);
 
-        //Display text
+        //Display reminder details
         String type = reminder.getType();
         String description = reminder.getDescription();
         try {
@@ -176,74 +157,32 @@ public class ReminderPopUpActivity extends Activity {
         }
 
         try {
-            if ("Medication".equals(type)) {
-                imgV.setImageResource(R.drawable.medication_big);
-            } else if ("Appointment".equals(type)) {
-                imgV.setImageResource(R.drawable.clock_big);
-            } else if ("Meal".equals(type)) {
-                imgV.setImageResource(R.drawable.teachers_day_big);
-            } else if ("Drink".equals(type)) {
-                imgV.setImageResource(R.drawable.plastic_bottle_big);
-            } else if ("Personal Hygiene".equals(type)) {
-                imgV.setImageResource(R.drawable.hygiene_big);
-            } else if ("Charge Phone".equals(type)) {
-                imgV.setImageResource(R.drawable.charge_big);
-            } else if ("Other".equals(type)) {
-                imgV.setImageResource(R.drawable.info_big);
-            }
+            imageView_reminderType.setImageResource(getImageForReminderType(type));
         } catch (Exception e) {
             Log.e(LOG, "Unable to set Image Resources for drawables");
         }
 
-        //LISTENERS
-        Button okBtn = (Button) findViewById(R.id.button_dialog_reminderpopup_ok);
-        okBtn.setOnClickListener(new View.OnClickListener() {
+        //Button OnClick listener
+        Button button_acknowledge = (Button) findViewById(R.id.button_dialog_reminderpopup_ok);
+        button_acknowledge.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (!voiceListened) {
-                    setTimeElapsed();
-                } else {
-                    //Do Nothing
-                }
+
+                //TODO: Log object set time elapsed from popup to current time!
                 userInteraction = true;
-                finish();
+
+                finish(); //Will call onDestroy method
             }
         });
     }
 
-    private void setTimeElapsed() {
-        //TIME LAPSE SETUP
-        Calendar calendarPress = Calendar.getInstance();
-        unixPressTime = calendarPress.getTimeInMillis();
-        long difference = (unixPressTime - unixStartTime);
-        timeElapsed = (int) difference;
-        Log.d(LOG, "TimeElapsed: " + timeElapsed);
-    }
-
-    private void getBatteryPercentage() {
-        BroadcastReceiver batteryLevelReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                context.unregisterReceiver(this);
-                int currentLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                int level = -1;
-                if (currentLevel >= 0 && scale > 0) {
-                    level = (currentLevel * 100) / scale;
-                }
-                batterylevel = level;
-            }
-        };
-        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
-    }
-
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        stopSoundVib();
-        stopVoiceReminder();
+        stopSoundVibrationVoice();
 
-        //TODO: Fix all this shite
+        //TODO: Fix all this scheduling shite
 //        ScheduleHelper scheduleHelper = new ScheduleHelper(this);
 //
 //        if (userInteraction == true) {
@@ -254,12 +193,46 @@ public class ReminderPopUpActivity extends Activity {
 //        }
     }
 
-    private void increaseListenCount() {
-        listenCount++;
-        Log.d(LOG, "Num of times listened: " + listenCount);
+
+    //Reminder methids
+
+
+    //Common methods
+    private long getCurrentUnixTime() {
+        Calendar calendar = Calendar.getInstance();
+        long time = calendar.getTimeInMillis();
+        Log.d(LOG, "Current unixtime: " + time + "ms");
+
+        return time;
     }
 
-    private void startSoundVib() {
+    private long getTimeDifference(long startTime, long endTime) {
+        long difference = (endTime - startTime);
+        Log.d(LOG, "Time difference: " + difference + "ms");
+        return difference;
+    }
+
+    private float getBatteryLevel() {
+        Intent batteryIntent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        // Error checking that probably isn't needed but I added just in case.
+        if (level == -1 || scale == -1) {
+            return 50.0f;
+        }
+
+        float batteryLevel = ((long) level / (float) scale) * 100.0f;
+        Log.d(LOG, "Battery Level: " + batteryLevel);
+
+        return batteryLevel;
+    }
+
+
+    private void increaseListenCount() {
+        setListenCount(getListenCount() + 1);
+    }
+
+    private void startPopUpSoundAndVibration() {
         //Sound
         notificationPlayer = MediaPlayer.create(this, R.raw.sound);
         notificationPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -277,44 +250,40 @@ public class ReminderPopUpActivity extends Activity {
         vib.vibrate(pattern, -1);
     }
 
-    private void stopSoundVib() {
+    private void stopPopUpSoundAndVibration() {
         try {
             if (notificationPlayer.isPlaying()) {
                 notificationPlayer.stop();
                 notificationPlayer.reset();
                 notificationPlayer.release();
-                Log.i(LOG, "notificationPlayer STOPPED");
-            } else {
-                //Do Nothing
+                Log.d(LOG, "notificationPlayer STOPPED");
             }
         } catch (IllegalStateException e) {
             Log.e(LOG, "notificationPlayer error: " + e);
         }
     }
 
-    private void playVoiceReminder() {
+    private void playVoiceReminder(String audioFilePath) {
+        // If it is playing, stop and reset the player
         try {
             if (voicePlayer.isPlaying()) {
-                voicePlayer.stop();
-                voicePlayer.reset();
-                Log.i(LOG, "Playback RESET");
-            } else {
-                //Do Nothing
+                stopVoiceReminder();
             }
         } catch (IllegalStateException e) {
             Log.e(LOG, "isPlaying error: " + e);
         }
 
+        //Setup the player
         try {
             voicePlayer.setVolume(1.0f, 1.0f);
             audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             audio.setStreamVolume(AudioManager.STREAM_MUSIC, (audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)), 0);
             voicePlayer.reset();
-            voicePlayer.setDataSource(filepath);
+            voicePlayer.setDataSource(audioFilePath);
             voicePlayer.prepare();
             voicePlayer.start();
             increaseListenCount();
-            Log.i(LOG, "Playback STARTED");
+            Log.d(LOG, "Voice reminder playback started");
         } catch (IOException e) {
             Log.e(LOG, "setDataSource failed:" + e);
         }
@@ -325,8 +294,34 @@ public class ReminderPopUpActivity extends Activity {
             voicePlayer.stop();
             voicePlayer.reset();
             voicePlayer.release();
+            Log.d(LOG, "Voice reminder playback stopped");
         } catch (Exception e) {
             Log.w(LOG, "Unable to stop voiceplayer");
+        }
+    }
+
+    private void enableOKButton(boolean isEnable) {
+        Button button = (Button) findViewById(R.id.button_dialog_reminderpopup_ok);
+        button.setEnabled(isEnable);
+    }
+
+    private int getImageForReminderType(String type) {
+        if ("Medication".equals(type)) {
+            return R.drawable.medication_big;
+        } else if ("Appointment".equals(type)) {
+            return R.drawable.clock_big;
+        } else if ("Meal".equals(type)) {
+            return R.drawable.teachers_day_big;
+        } else if ("Drink".equals(type)) {
+            return R.drawable.plastic_bottle_big;
+        } else if ("Personal Hygiene".equals(type)) {
+            return R.drawable.hygiene_big;
+        } else if ("Charge Phone".equals(type)) {
+            return R.drawable.charge_big;
+        } else if ("Other".equals(type)) {
+            return R.drawable.info_big;
+        } else {
+            return R.drawable.info_big;
         }
     }
 
@@ -345,15 +340,40 @@ public class ReminderPopUpActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        Log.d("CDA", "onBackPressed Called");
-        //Do Nothing
+        //Override default onBackPressed functionality to avoid acknowledgements being ignored
     }
 
-    private void enableOKButton(boolean isEnable) {
-        ((Button) findViewById(R.id.button_dialog_reminderpopup_ok)).setEnabled(isEnable);
+
+    private void stopSoundVibrationVoice() {
+        stopPopUpSoundAndVibration();
+        stopVoiceReminder();
     }
 
-//    @Override
+    private void saveLogforReminder() {
+
+    }
+
+
+    //Getter Setters
+    public static long getUnixTimePopUpDelivered() {
+        return unixTimePopUpDelivered;
+    }
+
+    public static void setUnixTimePopUpDelivered(long unixTimePopUpDelivered) {
+        ReminderPopUpActivity.unixTimePopUpDelivered = unixTimePopUpDelivered;
+    }
+
+    public static int getListenCount() {
+        return listenCount;
+    }
+
+    public static void setListenCount(int listenCount) {
+        ReminderPopUpActivity.listenCount = listenCount;
+        Log.d(LOG, "listenCount: " + listenCount);
+    }
+
+
+    //    @Override
 //    public void onStart() {
 //        super.onStart();
 //        // The rest of your onStart() code.

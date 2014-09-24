@@ -171,6 +171,8 @@ public class NewReminderActivity extends Activity {
                     if (rec_duration == 0) {
                         createToastWithText("Please record a message", getActivity());
                     } else {
+
+                        //TODO: Store recording filePath and duration to reminder object
                         Log.d(LOG, "Recording Filename: " + rec_filepath);
                         getFragmentManager().beginTransaction()
                                 .hide(getFragmentManager().findFragmentByTag(currentFragment))

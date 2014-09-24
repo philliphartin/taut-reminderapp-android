@@ -3,10 +3,14 @@ package com.phorloop.tautreminders.model.sugarorm;
 import com.orm.SugarRecord;
 
 /**
- * Created by philliphartin on 16/09/2014.
+ * Created by philliphartin on 24/09/2014.
  */
-public class Reminder extends SugarRecord<Reminder> {
+public class Log extends SugarRecord<Log> {
 
+    //UserDetails
+    int patientid;
+
+    //ReminderDetails
     String format;
     String time;
     String date;
@@ -17,14 +21,19 @@ public class Reminder extends SugarRecord<Reminder> {
     String repeatfreq;
     String createdby;
     int createdbyid;
-    int active;
-    String audioFilepath;
     long audioDuration;
 
-    public Reminder() {
+    //Statistics
+    int timeToAcknowledge;
+    int batteryLevel;
+    int listenCount;
+    int sentToServer;
+
+    public Log() {
     }
 
-    public Reminder(String format, String time, String date, long unixtime, String dayofweek, String type, String description, String repeatfreq, String createdby, int createdbyid, int active, String audioFilepath, long audioDuration) {
+    public Log(int patientid, String format, String time, String date, long unixtime, String dayofweek, String type, String description, String repeatfreq, String createdby, int createdbyid, long audioDuration, int timeToAcknowledge, int batteryLevel, int listenCount, int sentToServer) {
+        this.patientid = patientid;
         this.format = format;
         this.time = time;
         this.date = date;
@@ -35,27 +44,20 @@ public class Reminder extends SugarRecord<Reminder> {
         this.repeatfreq = repeatfreq;
         this.createdby = createdby;
         this.createdbyid = createdbyid;
-        this.active = active;
-        this.audioFilepath = audioFilepath;
         this.audioDuration = audioDuration;
+        this.timeToAcknowledge = timeToAcknowledge;
+        this.batteryLevel = batteryLevel;
+        this.listenCount = listenCount;
+        this.sentToServer = sentToServer;
     }
 
-    public Reminder(Reminder remindertoClone) {
-        this.description = remindertoClone.description;
-        this.format = remindertoClone.format;
-        this.time = remindertoClone.time;
-        this.date = remindertoClone.date;
-        this.unixtime = remindertoClone.unixtime;
-        this.dayofweek = remindertoClone.dayofweek;
-        this.type = remindertoClone.type;
-        this.repeatfreq = remindertoClone.repeatfreq;
-        this.createdby = remindertoClone.createdby;
-        this.createdbyid = remindertoClone.createdbyid;
-        this.active = remindertoClone.active;
-        this.audioFilepath = remindertoClone.audioFilepath;
-        this.audioDuration = remindertoClone.audioDuration;
+    public int getPatientid() {
+        return patientid;
     }
 
+    public void setPatientid(int patientid) {
+        this.patientid = patientid;
+    }
 
     public String getFormat() {
         return format;
@@ -105,6 +107,14 @@ public class Reminder extends SugarRecord<Reminder> {
         this.type = type;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getRepeatfreq() {
         return repeatfreq;
     }
@@ -129,30 +139,6 @@ public class Reminder extends SugarRecord<Reminder> {
         this.createdbyid = createdbyid;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getActive() {
-        return active;
-    }
-
-    public void setActive(int active) {
-        this.active = active;
-    }
-
-    public String getAudioFilepath() {
-        return audioFilepath;
-    }
-
-    public void setAudioFilepath(String audioFilepath) {
-        this.audioFilepath = audioFilepath;
-    }
-
     public long getAudioDuration() {
         return audioDuration;
     }
@@ -160,5 +146,36 @@ public class Reminder extends SugarRecord<Reminder> {
     public void setAudioDuration(long audioDuration) {
         this.audioDuration = audioDuration;
     }
-}
 
+    public int getTimeToAcknowledge() {
+        return timeToAcknowledge;
+    }
+
+    public void setTimeToAcknowledge(int timeToAcknowledge) {
+        this.timeToAcknowledge = timeToAcknowledge;
+    }
+
+    public int getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(int batteryLevel) {
+        this.batteryLevel = batteryLevel;
+    }
+
+    public int getListenCount() {
+        return listenCount;
+    }
+
+    public void setListenCount(int listenCount) {
+        this.listenCount = listenCount;
+    }
+
+    public int getSentToServer() {
+        return sentToServer;
+    }
+
+    public void setSentToServer(int sentToServer) {
+        this.sentToServer = sentToServer;
+    }
+}
