@@ -1,7 +1,5 @@
 package com.phorloop.tautreminders.controller.helpers;
 
-import android.util.Log;
-
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
@@ -28,9 +26,6 @@ public class DateHelper {
         calendar.set(Calendar.MONTH, dateTime.getMonthOfYear());
         calendar.set(Calendar.DAY_OF_MONTH, dateTime.getDayOfMonth());
 
-        String readAbleDate = sdf.format(calendar.getTime());
-        Log.d(LOG, readAbleDate);
-
         return sdf.format(calendar.getTime());
     }
 
@@ -44,10 +39,23 @@ public class DateHelper {
         calendar.set(Calendar.HOUR_OF_DAY, dateTime.getHourOfDay());
         calendar.set(Calendar.MINUTE, dateTime.getMinuteOfHour());
 
-        String readAbleDate = sdf.format(calendar.getTime());
-        Log.d(LOG, readAbleDate);
-
         return sdf.format(calendar.getTime());
+    }
+
+    public String getDateSaveReadableFromUnixTime(long unixTime) {
+
+        Instant instant = new Instant(unixTime);
+        DateTime dateTime = instant.toDateTime();
+
+        return getDateSaveReadableFromDateTime(dateTime);
+    }
+
+    public String getTimeSaveReadableFromUnixTime(long unixTime) {
+
+        Instant instant = new Instant(unixTime);
+        DateTime dateTime = instant.toDateTime();
+
+        return getTimeSaveReadableFromDateTime(dateTime);
     }
 
     //Human Readable
@@ -65,9 +73,6 @@ public class DateHelper {
         calendar.set(Calendar.MONTH, dateTime.getMonthOfYear());
         calendar.set(Calendar.DAY_OF_MONTH, dateTime.getDayOfMonth());
 
-        String readAbleDate = sdf.format(calendar.getTime());
-        Log.d(LOG, readAbleDate);
-
         return sdf.format(calendar.getTime());
     }
 
@@ -84,9 +89,6 @@ public class DateHelper {
         calendar.set(Calendar.HOUR_OF_DAY, dateTime.getHourOfDay());
         calendar.set(Calendar.MINUTE, dateTime.getMinuteOfHour());
 
-        String readAbleDate = sdf.format(calendar.getTime());
-        Log.d(LOG, readAbleDate);
-
         return sdf.format(calendar.getTime());
     }
 
@@ -95,9 +97,6 @@ public class DateHelper {
         //Create Formats for display
         String format = "MMMM dd, yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
-        String readAbleDate = sdf.format(calendar.getTime());
-        Log.d(LOG, readAbleDate);
-
         return sdf.format(calendar.getTime());
     }
 
@@ -106,9 +105,30 @@ public class DateHelper {
         //Create Formats for display
         String format = "h:mm aa"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
-        String readAbleDate = sdf.format(calendar.getTime());
-        Log.d(LOG, readAbleDate);
 
         return sdf.format(calendar.getTime());
     }
+
+    public String getDayOfTheWeekFromUnixTime(long unixtime){
+        Instant instant = new Instant(getUnixTimeNow());
+        DateTime dateTime = instant.toDateTime();
+
+        return dateTime.dayOfWeek().getAsString();
+    }
+
+    public long getUnixTimePlusMinutes(int minutes) {
+
+        Instant instant = new Instant(getUnixTimeNow());
+        DateTime dateTime = instant.toDateTime();
+        dateTime = dateTime.plusMinutes(minutes);
+
+        return dateTime.getMillis();
+
+    }
+
+    public long getUnixTimeNow() {
+        Instant instant = Instant.now();
+        return instant.getMillis();
+    }
+
 }

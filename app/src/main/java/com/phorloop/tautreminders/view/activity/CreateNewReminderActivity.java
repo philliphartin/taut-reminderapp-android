@@ -173,8 +173,10 @@ public class CreateNewReminderActivity extends Activity {
                         createToastWithText("Please record a message", getActivity());
                     } else {
 
-                        //TODO: Store recording filePath and duration to reminder object
-                        Log.d(LOG, "Recording Filename: " + rec_filepath);
+                        //Set Audio Details
+                        reminder.setAudioDuration(rec_duration);
+                        reminder.setAudioFilepath(rec_filepath);
+                        
                         getFragmentManager().beginTransaction()
                                 .hide(getFragmentManager().findFragmentByTag(currentFragment))
                                 .replace(R.id.container, new PickDateFragment(), fTAG_pickdate)

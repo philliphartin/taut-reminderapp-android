@@ -9,7 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.phorloop.tautreminders.controller.schedule.ReminderBroadcastReceiver;
+import com.phorloop.tautreminders.controller.broadcastreciever.ReminderBroadcastReceiver;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import org.joda.time.DateTime;
@@ -85,7 +85,6 @@ public class ScheduleHelper {
                 + " M:" + dateTimeReminderNEW.getMinuteOfHour());
 
         //Update reminder objects dates
-        //TODO: Update dates
         DateHelper dateHelper = new DateHelper();
         String date = dateHelper.getDateSaveReadableFromDateTime(dateTimeReminderNEW);
         String time = dateHelper.getTimeSaveReadableFromDateTime(dateTimeReminderNEW);
@@ -96,7 +95,7 @@ public class ScheduleHelper {
         reminder.setDayofweek(dateTimeReminderNEW.dayOfWeek().getAsText());
 
         ReminderHelper reminderHelper = new ReminderHelper(mContext);
-        reminderHelper.saveNewReminder(reminder);
+        reminderHelper.processRepeatReminder(reminder);
     }
 
     public boolean needsRescheduled(Reminder reminder) {

@@ -56,7 +56,6 @@ public class Reminder extends SugarRecord<Reminder> {
         this.audioDuration = remindertoClone.audioDuration;
     }
 
-
     public String getFormat() {
         return format;
     }

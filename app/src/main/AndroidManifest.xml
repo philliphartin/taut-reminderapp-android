@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activity.NewReminderActivity"
+            android:name=".view.activity.CreateNewReminderActivity"
             android:label="@string/title_activity_new_reminder"
             android:parentActivityName=".view.activity.HomeScreenActivity">
             <meta-data
@@ -48,7 +48,7 @@
                 android:value="com.phorloop.tautreminders.controller.activities.HomeSceenActivity" />
         </activity>
         <activity
-            android:name=".view.activity.ViewRemindersActivity"
+            android:name=".view.activity.ViewRemindersListActivity"
             android:label="@string/title_activity_view_reminder"
             android:parentActivityName=".view.activity.HomeScreenActivity">
             <meta-data
@@ -56,16 +56,13 @@
                 android:value="com.phorloop.tautreminders.controller.activities.HomeScreenActivity" />
         </activity>
         <activity
-            android:name=".view.activity.ReminderPopUpActivity"
+            android:name=".view.activity.PopUpActivity"
             android:excludeFromRecents="true"
             android:label="@string/title_activity_reminder_popup"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog"></activity>
-        <activity
-            android:name=".view.activity.TestActivity"
-            android:label="@string/title_activity_test"></activity>
 
         <!-- Register the Alarm Receiver -->
-        <receiver android:name=".controller.schedule.ReminderBroadcastReceiver" />
+        <receiver android:name=".controller.broadcastreciever.ReminderBroadcastReceiver" />
     </application>
 </manifest>

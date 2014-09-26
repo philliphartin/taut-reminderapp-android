@@ -1,4 +1,4 @@
-package com.phorloop.tautreminders.controller.customlistviewadapter;
+package com.phorloop.tautreminders.controller.listviewadapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,12 +16,12 @@ import java.util.ArrayList;
 /**
  * Created by Phillip J Hartin on 21/10/13.
  */
-public class ListAdapter extends BaseAdapter {
+public class ListAdapterForReminders extends BaseAdapter {
 
     private ArrayList listData;
     private LayoutInflater layoutInflater;
 
-    public ListAdapter(Context context, ArrayList listData) {
+    public ListAdapterForReminders(Context context, ArrayList listData) {
         this.listData = listData;
         layoutInflater = LayoutInflater.from(context);
     }
@@ -56,7 +56,7 @@ public class ListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        cListItem reminderItem = (cListItem) listData.get(position);
+        ListItem reminderItem = (ListItem) listData.get(position);
 
         //Get UnixTime to convert for human readable formats
         long unixTime = reminderItem.getUnixTime();

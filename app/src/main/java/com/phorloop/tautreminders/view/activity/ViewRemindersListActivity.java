@@ -16,8 +16,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.phorloop.tautreminders.R;
-import com.phorloop.tautreminders.controller.customListViewAdapter.cListAdapter;
-import com.phorloop.tautreminders.controller.customListViewAdapter.cListItem;
+import com.phorloop.tautreminders.controller.listviewadapter.ListAdapterForReminders;
+import com.phorloop.tautreminders.controller.listviewadapter.ListItem;
 import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
@@ -68,7 +68,7 @@ public class ViewRemindersListActivity extends Activity {
 
     protected Object mActionMode;
     ListView listView;
-    cListAdapter listAdapter;
+    ListAdapterForReminders listAdapter;
     ArrayList activeRemindersList;
 
     @Override
@@ -86,7 +86,7 @@ public class ViewRemindersListActivity extends Activity {
         //List Setup
         activeRemindersList = getListData();
         listView = (ListView) findViewById(R.id.custom_list);
-        listAdapter = new cListAdapter(this, activeRemindersList);
+        listAdapter = new ListAdapterForReminders(this, activeRemindersList);
         listView.setAdapter(listAdapter);
 
         //ListItem short click
@@ -116,7 +116,7 @@ public class ViewRemindersListActivity extends Activity {
 
         if (!reminders.isEmpty()) {
             for (Reminder reminder : reminders) {
-                cListItem reminderData = new cListItem();
+                ListItem reminderData = new ListItem();
                 reminderData.setUnixTime(reminder.getUnixtime());
                 reminderData.setType(reminder.getType());
                 reminderData.setRepeat(reminder.getRepeatfreq());
@@ -131,7 +131,7 @@ public class ViewRemindersListActivity extends Activity {
     public void showDesc(int position) {
         try {
             Object o = listView.getItemAtPosition(position);
-            cListItem reminderData = (cListItem) o;
+            ListItem reminderData = (ListItem) o;
             Toast.makeText(ViewRemindersListActivity.this, reminderData.getDesc().toString(), Toast.LENGTH_LONG).show();
         } catch (NullPointerException npe) {
             Log.e(LOGa, "" + npe.toString());
@@ -143,7 +143,7 @@ public class ViewRemindersListActivity extends Activity {
         try {
             //Get object at position
             Object o = listView.getItemAtPosition(position);
-            long reminderId = ((cListItem) o).getId();
+            long reminderId = ((ListItem) o).getId();
 
             removeAndUnscheduleReminder(reminderId);
 
@@ -155,7 +155,7 @@ public class ViewRemindersListActivity extends Activity {
         }
 
         activeRemindersList = getListData();
-        cListAdapter listAdapterRefresh = new cListAdapter(this, activeRemindersList);
+        ListAdapterForReminders listAdapterRefresh = new ListAdapterForReminders(this, activeRemindersList);
         listView.setAdapter(listAdapterRefresh);
     }
 

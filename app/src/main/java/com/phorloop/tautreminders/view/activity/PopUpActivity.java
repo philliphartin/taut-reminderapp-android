@@ -23,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
+import com.phorloop.tautreminders.controller.helpers.ScheduleHelper;
 import com.phorloop.tautreminders.model.sugarorm.Acknowledgement;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
@@ -75,7 +77,6 @@ public class PopUpActivity extends Activity {
         long reminderIdentifier = Long.parseLong(reminderIdentifierExtra);
         //String reminderAsJSON = extras.getString("reminder");
         //reminder = new Gson().fromJson(reminderAsJSON, Reminder.class);
-        //FIXME: Find reminder from reminderIdentifier
         reminder = Reminder.findById(Reminder.class, reminderIdentifier);
 
         //Flags to turn screen on and attempt to unlock keyguard
@@ -94,7 +95,10 @@ public class PopUpActivity extends Activity {
         ImageView imageView_reminderType = (ImageView) findViewById(R.id.popupImage);
 
         //Establish type of reminder
-        if (reminder.getFormat().contains("voice")) {
+
+        ReminderHelper reminderHelper = new ReminderHelper(this);
+
+        if (reminderHelper.isVoiceReminder(reminder)){
             //Initialise VoicePlayer;
             voicePlayer = new MediaPlayer();
             voicePlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -134,6 +138,7 @@ public class PopUpActivity extends Activity {
                         setTimeToAcknowledge(getTimeDifference(getUnixTimePopUpDelivered(), getCurrentUnixTime()));
                         voicePlayerListened = true; //update flag
                     }
+
                     playVoiceReminder(reminder.getAudioFilepath());
                 }
             });
@@ -187,7 +192,17 @@ public class PopUpActivity extends Activity {
         stopSoundVibrationVoice();
 
         saveAcknowledgmentLogforReminder();
-        //TODO: Recschedule reminder if needed
+        rescheduleReminderIfNeeded();
+    }
+
+    private void rescheduleReminderIfNeeded() {
+        ScheduleHelper scheduleHelper = new ScheduleHelper(this);
+
+        if (scheduleHelper.needsRescheduled(reminder)) {
+            scheduleHelper.rescheduleReminder(reminder);
+        } else {
+            //Do nothing
+        }
     }
 
 
@@ -228,7 +243,7 @@ public class PopUpActivity extends Activity {
 
     private void startPopUpSoundAndVibration() {
         //Sound
-        notificationPlayer = MediaPlayer.create(this, R.raw.triple); //FIXME: Change sound for release
+        notificationPlayer = MediaPlayer.create(this, R.raw.airhorn); //FIXME: Change sound for release
         notificationPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -347,10 +362,7 @@ public class PopUpActivity extends Activity {
         acknowledgement.setListenCount(getListenCount());
         acknowledgement.setSentToServer(0);
         acknowledgement.save();
-
-
     }
-
 
     //Getter Setters
     public static long getUnixTimePopUpDelivered() {

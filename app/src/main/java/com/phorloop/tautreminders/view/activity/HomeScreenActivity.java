@@ -84,7 +84,7 @@ public class HomeScreenActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     Log.d(LOGf, "New Reminder button was clicked");
-                    Intent intent = new Intent(getActivity(), NewReminderActivity.class);
+                    Intent intent = new Intent(getActivity(), CreateNewReminderActivity.class);
                     startActivity(intent);
                 }
             });
@@ -93,7 +93,7 @@ public class HomeScreenActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     Log.d(LOGf, "View Reminder button was clicked");
-                    Intent intent = new Intent(getActivity(), ViewRemindersActivity.class);
+                    Intent intent = new Intent(getActivity(), ViewRemindersListActivity.class);
                     startActivity(intent);
                 }
             });

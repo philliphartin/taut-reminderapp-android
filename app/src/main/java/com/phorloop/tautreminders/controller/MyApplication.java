@@ -8,6 +8,8 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.orm.SugarApp;
 import com.phorloop.tautreminders.R;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import java.util.HashMap;
 
 /**
@@ -25,6 +27,8 @@ public class MyApplication extends SugarApp {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        JodaTimeAndroid.init(this);
 
         // register to be informed of activities starting up
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

@@ -8,6 +8,4 @@
         <item name="live">http://193.61.148.92/api/taut/scripts/log_upload.php</item>
         <item name="test">http://api.phorloop.com/taut/scripts/log_upload.php</item>
     </string-array>
-
-
 </resources>
