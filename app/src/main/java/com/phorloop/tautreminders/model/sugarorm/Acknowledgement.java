@@ -5,7 +5,7 @@ import com.orm.SugarRecord;
 /**
  * Created by philliphartin on 24/09/2014.
  */
-public class Log extends SugarRecord<Log> {
+public class Acknowledgement extends SugarRecord<Acknowledgement> {
 
     //UserDetails
     int patientid;
@@ -29,10 +29,10 @@ public class Log extends SugarRecord<Log> {
     int listenCount;
     int sentToServer;
 
-    public Log() {
+    public Acknowledgement() {
     }
 
-    public Log(int patientid, String format, String time, String date, long unixtime, String dayofweek, String type, String description, String repeatfreq, String createdby, int createdbyid, long audioDuration, int timeToAcknowledge, int batteryLevel, int listenCount, int sentToServer) {
+    public Acknowledgement(int patientid, String format, String time, String date, long unixtime, String dayofweek, String type, String description, String repeatfreq, String createdby, int createdbyid, long audioDuration, int timeToAcknowledge, int batteryLevel, int listenCount, int sentToServer) {
         this.patientid = patientid;
         this.format = format;
         this.time = time;

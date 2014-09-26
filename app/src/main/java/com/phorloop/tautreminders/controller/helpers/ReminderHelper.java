@@ -1,11 +1,9 @@
-package com.phorloop.tautreminders.controller.schedule;
+package com.phorloop.tautreminders.controller.helpers;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.orm.query.Select;
-import com.phorloop.tautreminders.model.gson.ReminderGSON;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import java.util.Collections;
@@ -44,27 +42,27 @@ public class ReminderHelper {
         }
     }
 
+    public void softDeleteReminderWithId(long id){
+        Reminder reminder = Reminder.findById(Reminder.class, id);
+        reminder.setActive(0);
+        reminder.save();
+
+        ScheduleHelper scheduleHelper = new ScheduleHelper(mContext);
+        scheduleHelper.unScheduleReminder(reminder.getId());
+    }
+
     public void deleteReminderWithId(long id) {
         Reminder reminder = Reminder.findById(Reminder.class, id);
         reminder.delete();
-
         Log.d(LOG, "Reminder: " + id + " deleted using ReminderHelper");
 
     }
 
-    public void saveReminder(Reminder reminderToSave){
+    public void saveNewReminder(Reminder reminderToSave){
         Reminder reminder = new Reminder(reminderToSave);
         reminder.save();
 
         ScheduleHelper scheduleHelper = new ScheduleHelper(mContext);
         scheduleHelper.scheduleReminder(reminder);
-        Log.d(LOG, reminderAsJSON(reminder));
-    }
-
-    public String reminderAsJSON(Reminder reminder){
-        ReminderGSON reminderGSON = new ReminderGSON(reminder);
-        Gson gson = new Gson();
-        String json = gson.toJson(reminderGSON);
-        return json;
     }
 }

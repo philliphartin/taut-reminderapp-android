@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -23,8 +22,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.model.sugarorm.Acknowledgement;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import java.io.IOException;
@@ -34,8 +33,8 @@ import java.util.Calendar;
  * Created by Phillip J Hartin on 20/10/13.
  */
 
-public class ReminderPopUpActivity extends Activity {
-    private final static String LOG = "ReminderPopUpActivity";
+public class PopUpActivity extends Activity {
+    private final static String LOG = "PopUpActivity";
 
     //Components
     private static MediaPlayer voicePlayer;
@@ -50,14 +49,17 @@ public class ReminderPopUpActivity extends Activity {
     //Reminder
     private static Reminder reminder;
 
+    //Initialise Log Object
+    private static Acknowledgement acknowledgement = new Acknowledgement();
+
     //Instance tracking
     private static long unixTimePopUpDelivered;
     private static int listenCount;
     private static Boolean voicePlayerListened = false;
+    private static Boolean userInteraction = false;
 
     //Statistics to log
-    Boolean userInteraction = false;
-    SharedPreferences sharedPreferences;
+    private static long timeToAcknowledge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +71,12 @@ public class ReminderPopUpActivity extends Activity {
 
         //Get reminder object from intent
         Bundle extras = getIntent().getExtras();
-        String reminderAsJSON = extras.getString("reminder");
-        reminder = new Gson().fromJson(reminderAsJSON, Reminder.class);
+        String reminderIdentifierExtra = extras.getString("reminderIdentifier");
+        long reminderIdentifier = Long.parseLong(reminderIdentifierExtra);
+        //String reminderAsJSON = extras.getString("reminder");
+        //reminder = new Gson().fromJson(reminderAsJSON, Reminder.class);
+        //FIXME: Find reminder from reminderIdentifier
+        reminder = Reminder.findById(Reminder.class, reminderIdentifier);
 
         //Flags to turn screen on and attempt to unlock keyguard
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -125,7 +131,7 @@ public class ReminderPopUpActivity extends Activity {
                     stopPopUpSoundAndVibration();
                     //Check if voice has been listened to before.
                     if (!voicePlayerListened) { //If not, log the time elapsed from popup to first listen.
-                        //TODO: Log object set time elapsed from popup to current time!
+                        setTimeToAcknowledge(getTimeDifference(getUnixTimePopUpDelivered(), getCurrentUnixTime()));
                         voicePlayerListened = true; //update flag
                     }
                     playVoiceReminder(reminder.getAudioFilepath());
@@ -168,10 +174,8 @@ public class ReminderPopUpActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-
-                //TODO: Log object set time elapsed from popup to current time!
+                setTimeToAcknowledge(getTimeDifference(getUnixTimePopUpDelivered(), getCurrentUnixTime()));
                 userInteraction = true;
-
                 finish(); //Will call onDestroy method
             }
         });
@@ -182,19 +186,9 @@ public class ReminderPopUpActivity extends Activity {
         super.onDestroy();
         stopSoundVibrationVoice();
 
-        //TODO: Fix all this scheduling shite
-//        ScheduleHelper scheduleHelper = new ScheduleHelper(this);
-//
-//        if (userInteraction == true) {
-//            //Do Nothing as already logged
-//            scheduleHelper.reScheduleReminder(id, 1, timeElapsed, batterylevel, voiceduration, listenCount);
-//        } else {
-//            scheduleHelper.reScheduleReminder(id, 0, timeElapsed, batterylevel, voiceduration, listenCount);
-//        }
+        saveAcknowledgmentLogforReminder();
+        //TODO: Recschedule reminder if needed
     }
-
-
-    //Reminder methids
 
 
     //Common methods
@@ -234,7 +228,7 @@ public class ReminderPopUpActivity extends Activity {
 
     private void startPopUpSoundAndVibration() {
         //Sound
-        notificationPlayer = MediaPlayer.create(this, R.raw.sound);
+        notificationPlayer = MediaPlayer.create(this, R.raw.triple); //FIXME: Change sound for release
         notificationPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -338,18 +332,22 @@ public class ReminderPopUpActivity extends Activity {
         }
     };
 
-    @Override
-    public void onBackPressed() {
-        //Override default onBackPressed functionality to avoid acknowledgements being ignored
-    }
-
 
     private void stopSoundVibrationVoice() {
         stopPopUpSoundAndVibration();
         stopVoiceReminder();
     }
 
-    private void saveLogforReminder() {
+    private void saveAcknowledgmentLogforReminder() {
+        acknowledgement.setReminderId(reminder.getId());
+        acknowledgement.setPatientId(1234); //TODO: Get patientId
+        acknowledgement.setAcknowledgedByUser(convertBooleanToInt(userInteraction));
+        acknowledgement.setTimeToAcknowledge(getTimeToAcknowledge());
+        acknowledgement.setBatteryLevel((int) getBatteryLevel()); //Cast float to int
+        acknowledgement.setListenCount(getListenCount());
+        acknowledgement.setSentToServer(0);
+        acknowledgement.save();
+
 
     }
 
@@ -360,7 +358,7 @@ public class ReminderPopUpActivity extends Activity {
     }
 
     public static void setUnixTimePopUpDelivered(long unixTimePopUpDelivered) {
-        ReminderPopUpActivity.unixTimePopUpDelivered = unixTimePopUpDelivered;
+        PopUpActivity.unixTimePopUpDelivered = unixTimePopUpDelivered;
     }
 
     public static int getListenCount() {
@@ -368,10 +366,22 @@ public class ReminderPopUpActivity extends Activity {
     }
 
     public static void setListenCount(int listenCount) {
-        ReminderPopUpActivity.listenCount = listenCount;
+        PopUpActivity.listenCount = listenCount;
         Log.d(LOG, "listenCount: " + listenCount);
     }
 
+    public static long getTimeToAcknowledge() {
+        return timeToAcknowledge;
+    }
+
+    public static void setTimeToAcknowledge(long timeToAcknowledge) {
+
+        PopUpActivity.timeToAcknowledge = timeToAcknowledge;
+    }
+
+    private int convertBooleanToInt(Boolean bool) {
+        return bool ? 1 : 0;
+    }
 
     //    @Override
 //    public void onStart() {
@@ -388,4 +398,9 @@ public class ReminderPopUpActivity extends Activity {
 //        //Google Analytics Code
 //        EasyTracker.getInstance(this).activityStop(this);  // Add this method.
 //    }
+
+    @Override
+    public void onBackPressed() {
+        //Override default onBackPressed functionality to avoid acknowledgements being ignored
+    }
 }

@@ -1,4 +1,4 @@
-package com.phorloop.tautreminders.controller.schedule;
+package com.phorloop.tautreminders.controller.demo;
 
 /**
  * Created by philliphartin on 23/09/2014.

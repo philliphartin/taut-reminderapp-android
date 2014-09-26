@@ -35,7 +35,8 @@ import android.widget.TimePicker;
 
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.phorloop.tautreminders.R;
-import com.phorloop.tautreminders.controller.schedule.ReminderHelper;
+import com.phorloop.tautreminders.controller.helpers.DateHelper;
+import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import org.joda.time.DateTime;
@@ -50,8 +51,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class NewReminderActivity extends Activity {
-    private static final String LOGa = "NewReminderActivity";
+public class CreateNewReminderActivity extends Activity {
+    private static final String LOGa = "CreateNewReminderActivity";
 
     //FragmentTags
     private final static String fTAG_adltype = "fTAG_adltype";
@@ -436,15 +437,17 @@ public class NewReminderActivity extends Activity {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
+
                 //Set Calendar Values
                 cal_selected.set(Calendar.YEAR, year);
                 cal_selected.set(Calendar.MONTH, monthOfYear);
                 cal_selected.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
+                DateHelper dateHelper = new DateHelper();
+                String humanFormat = dateHelper.getDateHumanReadableFromCalendar(cal_selected);
+
                 //Create Formats for display
-                String humanFormat = "MMMM dd, yyyy"; //In which you need put here
-                SimpleDateFormat sdf_human = new SimpleDateFormat(humanFormat, Locale.US);
-                button_pickDate.setText(sdf_human.format(cal_selected.getTime()));
+                button_pickDate.setText(humanFormat);
 
                 dateChosen = true;
             }
@@ -457,10 +460,9 @@ public class NewReminderActivity extends Activity {
                 cal_selected.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 cal_selected.set(Calendar.MINUTE, minute);
 
-                //Create Formats for display
-                String humanFormat = "h:mm aa"; //In which you need put here
-                SimpleDateFormat sdf_human = new SimpleDateFormat(humanFormat, Locale.US);
-                button_pickTime.setText(sdf_human.format(cal_selected.getTime()));
+                DateHelper dateHelper = new DateHelper();
+                String humanFormat = dateHelper.getTimeHumanReadableFromCalendar(cal_selected);
+                button_pickTime.setText(humanFormat);
 
                 timeChosen = true;
             }
@@ -967,7 +969,7 @@ public class NewReminderActivity extends Activity {
 
                 //Save Reminder
                 ReminderHelper reminderHelper = new ReminderHelper(context);
-                reminderHelper.saveReminder(reminder);
+                reminderHelper.saveNewReminder(reminder);
             }
         }
 
@@ -1011,7 +1013,7 @@ public class NewReminderActivity extends Activity {
                     reminder.setUnixtime(newTime);
                     reminder.setActive(1);
                     //Save Reminder
-                    reminderHelper.saveReminder(reminder);
+                    reminderHelper.saveNewReminder(reminder);
                 }
             }
         }
