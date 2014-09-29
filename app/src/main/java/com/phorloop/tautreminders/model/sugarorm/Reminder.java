@@ -159,5 +159,7 @@ public class Reminder extends SugarRecord<Reminder> {
     public void setAudioDuration(long audioDuration) {
         this.audioDuration = audioDuration;
     }
+
+
 }
 

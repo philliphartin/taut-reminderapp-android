@@ -15,6 +15,8 @@ import com.phorloop.tautreminders.model.sugarorm.Reminder;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
+import java.util.List;
+
 /**
  * Created by philliphartin on 22/09/2014.
  */
@@ -45,7 +47,7 @@ public class ScheduleHelper {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, reminderId, intent, PendingIntent.FLAG_UPDATE_CURRENT); //Pending intent (context, requestCode: same as reminderId, intent, flags)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, unixTime, pendingIntent);
 
-        Log.d(LOG, "Reminder: " + reminderId + " scheduled using ScheduleHelper");
+        Log.d(LOG, "Reminder " + reminderId + ": scheduled");
     }
 
     public void unScheduleReminder(long reminderId) {
@@ -54,9 +56,10 @@ public class ScheduleHelper {
 
         PendingIntent cancelIntent = PendingIntent.getBroadcast(mContext, (int) reminderId, cancelServiceIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Log.d(LOG, "Reminder: " + reminderId + " unScheduled using ScheduleHelper");
+        Log.d(LOG, "Reminder " + reminderId + ": unScheduled");
         alarmManager.cancel(cancelIntent);
     }
+
 
     public void rescheduleReminder(Reminder reminder) {
         //Create Joda Instant (from reminder unixtime)
@@ -65,20 +68,20 @@ public class ScheduleHelper {
         DateTime dateTimeReminderOLD = instantReminder.toDateTime();
         DateTime dateTimeReminderNEW = new DateTime();
 
-        Log.d(LOG, "DateTimeReminderOLD" + " Y:" + dateTimeReminderOLD.getYear()
+        Log.d(LOG, "Old time:" + " Y:" + dateTimeReminderOLD.getYear()
                 + " M:" + dateTimeReminderOLD.getMonthOfYear()
                 + " D:" + dateTimeReminderOLD.getDayOfMonth()
                 + " H:" + dateTimeReminderOLD.getHourOfDay()
                 + " M:" + dateTimeReminderOLD.getMinuteOfHour());
 
         //Determine what the repeatType is
-        if (reminder.getRepeatfreq().contains("Weekly")) {
+        if (reminder.getRepeatfreq().equals("Weekly")) {
             dateTimeReminderNEW = addDaysAndCheck(dateTimeReminderOLD, 7);
-        } else if (reminder.getRepeatfreq().contains("Everyday")) {
+        } else if (reminder.getRepeatfreq().equals("Everyday")) {
             dateTimeReminderNEW = addDaysAndCheck(dateTimeReminderOLD, 1);
         }
 
-        Log.d(LOG, "DateTimeReminderNEW" + " Y:" + dateTimeReminderNEW.getYear()
+        Log.d(LOG, "New time:" + " Y:" + dateTimeReminderNEW.getYear()
                 + " M:" + dateTimeReminderNEW.getMonthOfYear()
                 + " D:" + dateTimeReminderNEW.getDayOfMonth()
                 + " H:" + dateTimeReminderNEW.getHourOfDay()
@@ -93,17 +96,18 @@ public class ScheduleHelper {
         reminder.setTime(time);
         reminder.setUnixtime(dateTimeReminderNEW.getMillis());
         reminder.setDayofweek(dateTimeReminderNEW.dayOfWeek().getAsText());
+        reminder.setActive(1);
 
         ReminderHelper reminderHelper = new ReminderHelper(mContext);
         reminderHelper.processRepeatReminder(reminder);
     }
 
     public boolean needsRescheduled(Reminder reminder) {
-        if (reminder.getRepeatfreq().contains("Never")) {
+        if (reminder.getRepeatfreq().equals("Never")) {
             Log.d(LOG, "Repeat not required");
             return false;
         } else {
-            Log.d(LOG, "Repeat required");
+            Log.d(LOG, "Repeat required: " + reminder.getRepeatfreq());
             return true;
         }
     }
@@ -118,22 +122,29 @@ public class ScheduleHelper {
     private DateTime addDaysAndCheck(DateTime dateTime, int daysToAdd) {
 
         while (dateTime.isBeforeNow()) {
-            Log.d(LOG, "dateTime.IsBeforeNow " + dateTime.isBeforeNow());
-
             dateTime = dateTime.plusDays(daysToAdd);
-
-            Log.d(LOG, "Adding" + daysToAdd + " days to dateObject:" + " Y:" + dateTime.getYear()
-                    + " M:" + dateTime.getMonthOfYear()
-                    + " D:" + dateTime.getDayOfMonth()
-                    + " H:" + dateTime.getHourOfDay()
-                    + " M:" + dateTime.getMinuteOfHour());
         }
-
-        Log.d(LOG, "Finalised new date" + " Y:" + dateTime.getYear()
-                + " M:" + dateTime.getMonthOfYear()
-                + " D:" + dateTime.getDayOfMonth()
-                + " H:" + dateTime.getHourOfDay()
-                + " M:" + dateTime.getMinuteOfHour());
         return dateTime;
+    }
+
+    public void rescheduleMissedReminders() {
+        //Helpers
+        DateHelper dateHelper = new DateHelper();
+        ReminderHelper reminderHelper = new ReminderHelper(mContext);
+        AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper();
+
+        List<Reminder> reminderList = reminderHelper.getActiveRemindersFromPast(dateHelper.getUnixTimeNow());
+
+        for (int i = 0; i < reminderList.size(); i++) {
+            Reminder reminder = reminderList.get(i);
+
+            // If missed reminder needs rescheduled then reschedule
+            if (needsRescheduled(reminder)) {
+                rescheduleReminder(reminder);
+            } else {
+                reminderHelper.softDeleteReminder(reminder); //If doesn't need reschudled just make not active
+            }
+            acknowledgementHelper.logReminderAsMissed(reminder); // Log as missed for all
+        }
     }
 }

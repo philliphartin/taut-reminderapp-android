@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.controller.helpers.AcknowledgementHelper;
 import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
 import com.phorloop.tautreminders.controller.helpers.ScheduleHelper;
 import com.phorloop.tautreminders.model.sugarorm.Acknowledgement;
@@ -98,7 +99,7 @@ public class PopUpActivity extends Activity {
 
         ReminderHelper reminderHelper = new ReminderHelper(this);
 
-        if (reminderHelper.isVoiceReminder(reminder)){
+        if (reminderHelper.isVoiceReminder(reminder)) {
             //Initialise VoicePlayer;
             voicePlayer = new MediaPlayer();
             voicePlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -186,22 +187,11 @@ public class PopUpActivity extends Activity {
         });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopSoundVibrationVoice();
-
-        saveAcknowledgmentLogforReminder();
-        rescheduleReminderIfNeeded();
-    }
 
     private void rescheduleReminderIfNeeded() {
         ScheduleHelper scheduleHelper = new ScheduleHelper(this);
-
         if (scheduleHelper.needsRescheduled(reminder)) {
             scheduleHelper.rescheduleReminder(reminder);
-        } else {
-            //Do nothing
         }
     }
 
@@ -353,17 +343,6 @@ public class PopUpActivity extends Activity {
         stopVoiceReminder();
     }
 
-    private void saveAcknowledgmentLogforReminder() {
-        acknowledgement.setReminderId(reminder.getId());
-        acknowledgement.setPatientId(1234); //TODO: Get patientId
-        acknowledgement.setAcknowledgedByUser(convertBooleanToInt(userInteraction));
-        acknowledgement.setTimeToAcknowledge(getTimeToAcknowledge());
-        acknowledgement.setBatteryLevel((int) getBatteryLevel()); //Cast float to int
-        acknowledgement.setListenCount(getListenCount());
-        acknowledgement.setSentToServer(0);
-        acknowledgement.save();
-    }
-
     //Getter Setters
     public static long getUnixTimePopUpDelivered() {
         return unixTimePopUpDelivered;
@@ -410,6 +389,23 @@ public class PopUpActivity extends Activity {
 //        //Google Analytics Code
 //        EasyTracker.getInstance(this).activityStop(this);  // Add this method.
 //    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopSoundVibrationVoice();
+
+        AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper();
+
+        //Set acknowledgment properties before passing to helper
+        acknowledgement.setTimeToAcknowledge(getTimeToAcknowledge());
+        acknowledgement.setBatteryLevel((int) getBatteryLevel());
+        acknowledgement.setListenCount(getListenCount());
+
+        acknowledgementHelper.saveAcknowledgmentLogforReminder(reminder, acknowledgement, userInteraction);
+
+        rescheduleReminderIfNeeded();
+    }
 
     @Override
     public void onBackPressed() {

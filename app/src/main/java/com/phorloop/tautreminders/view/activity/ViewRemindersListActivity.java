@@ -132,10 +132,10 @@ public class ViewRemindersListActivity extends Activity {
         try {
             Object o = listView.getItemAtPosition(position);
             ListItem reminderData = (ListItem) o;
-            Toast.makeText(ViewRemindersListActivity.this, reminderData.getDesc().toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(ViewRemindersListActivity.this, reminderData.getDesc().toString(), Toast.LENGTH_SHORT).show();
         } catch (NullPointerException npe) {
             Log.e(LOGa, "" + npe.toString());
-            Toast.makeText(ViewRemindersListActivity.this, "There was a problem getting the description, please try again", Toast.LENGTH_LONG).show();
+            Toast.makeText(ViewRemindersListActivity.this, "There was a problem getting the description, please try again", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -151,7 +151,7 @@ public class ViewRemindersListActivity extends Activity {
 
         } catch (NullPointerException npe) {
             Log.e(LOGa, "" + npe.toString());
-            Toast.makeText(ViewRemindersListActivity.this, "There was a problem deleting the reminder, please try again", Toast.LENGTH_LONG).show();
+            Toast.makeText(ViewRemindersListActivity.this, "There was a problem deleting the reminder, please try again", Toast.LENGTH_SHORT).show();
         }
 
         activeRemindersList = getListData();

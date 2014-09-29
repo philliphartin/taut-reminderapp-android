@@ -107,5 +107,4 @@ public class MyApplication extends SugarApp {
     }
 
 
-
 }
