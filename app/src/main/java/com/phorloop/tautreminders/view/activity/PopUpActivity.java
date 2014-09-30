@@ -395,7 +395,7 @@ public class PopUpActivity extends Activity {
         super.onDestroy();
         stopSoundVibrationVoice();
 
-        AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper();
+        AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper(this);
 
         //Set acknowledgment properties before passing to helper
         acknowledgement.setTimeToAcknowledge(getTimeToAcknowledge());

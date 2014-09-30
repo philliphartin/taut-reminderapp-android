@@ -10,10 +10,12 @@
 
     <TextView
         android:id="@+id/textView"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:text="Today's Date is ... " />
+        android:paddingBottom="14dp"
+        android:text="Today's Date is ... "
+        android:textAlignment="center"/>
 
     <AnalogClock
         android:id="@+id/analogClock"

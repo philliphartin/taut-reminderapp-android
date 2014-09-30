@@ -131,7 +131,7 @@ public class ScheduleHelper {
         //Helpers
         DateHelper dateHelper = new DateHelper();
         ReminderHelper reminderHelper = new ReminderHelper(mContext);
-        AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper();
+        AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper(mContext);
 
         List<Reminder> reminderList = reminderHelper.getActiveRemindersFromPast(dateHelper.getUnixTimeNow());
 

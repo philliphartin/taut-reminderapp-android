@@ -36,6 +36,7 @@ import android.widget.TimePicker;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.phorloop.tautreminders.R;
 import com.phorloop.tautreminders.controller.helpers.DateHelper;
+import com.phorloop.tautreminders.controller.helpers.PreferencesHelper;
 import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
@@ -47,9 +48,11 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 public class CreateNewReminderActivity extends Activity {
     private static final String LOGa = "CreateNewReminderActivity";
@@ -153,7 +156,6 @@ public class CreateNewReminderActivity extends Activity {
         private MediaRecorder recorder = null;
         private static int rec_duration = 0;
 
-        //TODO: RECORD AUDIO AND SAVE TO FILE
         public RecordVoiceFragment() {
         }
 
@@ -512,9 +514,6 @@ public class CreateNewReminderActivity extends Activity {
         EditText editTextDescription;
 
         //Method Specific items
-
-        //TODO: RECORD ADL TYPE AND DESCRIPTIONS
-
         public ADLTypeFragment() {
         }
 
@@ -585,7 +584,6 @@ public class CreateNewReminderActivity extends Activity {
         //Save details
         String repeat;
 
-        //TODO: RECORD FREQ TYPE AND DESCRIPTIONS
         public RepeatFrequencyFragment() {
         }
 
@@ -792,7 +790,12 @@ public class CreateNewReminderActivity extends Activity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_new_reminder_checkuser, container, false);
 
+            final PreferencesHelper preferencesHelper = new PreferencesHelper(getActivity());
+
             //Init UI elements
+            TextView textView_userName = (TextView) rootView.findViewById(R.id.textView_userCheck);
+            textView_userName.setText("Is this " + preferencesHelper.getUserName() + "?");
+
             Button button_participant = (Button) rootView.findViewById(R.id.button_new_reminder_checkuser_participant);
             button_participant.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -808,18 +811,27 @@ public class CreateNewReminderActivity extends Activity {
                 @Override
                 public void onClick(View view) {
 
-                    //TODO: Get carer details and assign to string array
-                    String[] users = {"bill", "ben"};
+                    ArrayList<Map<String, String>> carerMap = preferencesHelper.getCarerHashMap();
+                    int size = carerMap.size();
+                    final String[] carerNames = new String[size];
+                    final int[] carerIds = new int[size];
+
+                    for (int i = 0; i < size; i++) {
+                        Map map = carerMap.get(i);
+                        String carerName = (String) map.get("carername");
+                        String carerId = (String) map.get("carerid");
+                        carerNames[i] = carerName;
+                        carerIds[i] = Integer.parseInt(carerId);
+                    }
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle("Please select who you are")
-                            .setItems(users, new DialogInterface.OnClickListener() {
+                            .setItems(carerNames, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // The 'which' argument contains the index position
-                                    // of the selected item
-                                    //TODO: Set Carer ID based on 'which' position
                                     reminder.setCreatedby("carer");
-                                    reminder.setCreatedbyid(1234); //FIXME: FIX DIS YO
+                                    reminder.setCreatedbyid(carerIds[which]);
+                                    Log.d(LOGa, "CarerId: " + carerIds[which] + " and Carer Name: " + carerNames[which]);
                                     navigateToNextScreen();
                                 }
                             });
@@ -879,7 +891,6 @@ public class CreateNewReminderActivity extends Activity {
             button_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO: SAVE THE REMINDER
                     saveReminder();
                     returnToHomeScreen();
                 }

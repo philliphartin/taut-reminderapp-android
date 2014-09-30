@@ -15,8 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.controller.helpers.DateHelper;
 import com.phorloop.tautreminders.controller.helpers.PreferencesHelper;
 import com.phorloop.tautreminders.view.dialog.WelcomeDialog;
 
@@ -31,7 +33,7 @@ public class HomeScreenActivity extends Activity {
         setContentView(R.layout.activity_home_sceen);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new HomeScreenFragment())
                     .commit();
         }
 
@@ -64,7 +66,8 @@ public class HomeScreenActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent_preferences = new Intent(this, SettingsActivity.class);
+            startActivity(intent_preferences);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -72,12 +75,11 @@ public class HomeScreenActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class HomeScreenFragment extends Fragment {
 
         private static final String LOGf = "FormatChoiceFragment";
 
-
-        public PlaceholderFragment() {
+        public HomeScreenFragment() {
         }
 
         @Override
@@ -88,8 +90,11 @@ public class HomeScreenActivity extends Activity {
             View rootView = inflater.inflate(R.layout.fragment_home_sceen, container, false);
 
             //Init UI elements
+            TextView textView_todaysDate = (TextView) rootView.findViewById(R.id.textView);
             Button button_newReminder = (Button) rootView.findViewById(R.id.button_createReminder);
             Button button_viewReminders = (Button) rootView.findViewById(R.id.button_viewReminders);
+
+            textView_todaysDate.setText("Today's date is " + getTodaysDate());
 
             button_newReminder.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,6 +115,11 @@ public class HomeScreenActivity extends Activity {
             });
 
             return rootView;
+        }
+
+        private String getTodaysDate() {
+            DateHelper dateHelper = new DateHelper();
+            return dateHelper.getDateHumanReadableFromUnixTime(dateHelper.getUnixTimeNow());
         }
     }
 
@@ -137,5 +147,6 @@ public class HomeScreenActivity extends Activity {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
 
 }
