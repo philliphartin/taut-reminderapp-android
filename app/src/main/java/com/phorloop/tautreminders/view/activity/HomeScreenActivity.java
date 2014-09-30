@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.controller.helpers.PreferencesHelper;
+import com.phorloop.tautreminders.view.dialog.WelcomeDialog;
 
 
 public class HomeScreenActivity extends Activity {
@@ -37,6 +39,15 @@ public class HomeScreenActivity extends Activity {
         actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setTitle("TAUT Reminders App");
+
+        //Check if the app has been setup
+        PreferencesHelper preferencesHelper = new PreferencesHelper(this);
+        boolean initialised = preferencesHelper.getInitialised();
+
+        if (!initialised) {
+            WelcomeDialog welcomeDialog = new WelcomeDialog(this);
+            welcomeDialog.show();
+        }
     }
 
     @Override

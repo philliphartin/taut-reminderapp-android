@@ -1,0 +1,115 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="details_user"
+        android:title="User Details">
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogMessage="Enter the main users first name"
+            android:dialogTitle="The User's Name"
+            android:key="user_name"
+            android:summary="Set the user's name"
+            android:title="User's First Name" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogMessage="Enter the User ID that was provided"
+            android:dialogTitle="Unique User ID"
+            android:key="user_id"
+            android:maxLength="4"
+            android:numeric="integer"
+            android:summary="Set the user's unique ID"
+            android:title="User ID" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="details_carer"
+        android:title="Carer Details">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="carer_exist"
+            android:summary="Enable Carer participation"
+            android:title="Do you have a carer?" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="carer_exist"
+            android:dialogMessage="Enter the carer's first name"
+            android:dialogTitle="The Carer's name"
+            android:key="carer_name"
+            android:summary="Set the Carer's name"
+            android:title="Carer First Name" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="carer_exist"
+            android:dialogMessage="Enter the Carer ID that was provided"
+            android:dialogTitle="Unique Carer ID"
+            android:key="carer_id"
+            android:maxLength="4"
+            android:numeric="integer"
+            android:summary="Set the Carer's unique ID"
+            android:title="Carer ID" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="details_carer2"
+        android:title="2nd Carer">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="carer_exist2"
+            android:summary="Enable 2nd Carer participation"
+            android:title="Do you have a second carer?" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="carer_exist2"
+            android:dialogMessage="Enter the carer's first name"
+            android:dialogTitle="The Carer's Name"
+            android:key="carer_name2"
+            android:summary="Set the second Carer's name"
+            android:title="Carer First Name" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="carer_exist2"
+            android:dialogMessage="Enter the Carer ID that was provided"
+            android:dialogTitle="Unique Carer ID"
+            android:key="carer_id2"
+            android:maxLength="4"
+            android:numeric="integer"
+            android:summary="Set the second Carer's unique ID"
+            android:title="Carer ID" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="sync_category"
+        android:title="Sync Setup">
+        <ListPreference
+            android:defaultValue="http://193.61.148.92/api/taut/scripts/log_upload.php"
+            android:entries="@array/serverNames"
+            android:entryValues="@array/serverUrl"
+            android:key="database"
+            android:summary="Define Which Server will upload to"
+            android:title="Select Server"
+        />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="version_cat"
+        android:title="Version Info">
+        <ListPreference
+            android:enabled="false"
+            android:key="version"
+            android:persistent="false"
+            android:selectable="false"
+            android:shouldDisableView="false"
+            android:summary="Build: "
+            android:title="Version: " />
+    </PreferenceCategory>
+
+</PreferenceScreen>
