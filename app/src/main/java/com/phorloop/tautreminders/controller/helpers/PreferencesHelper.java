@@ -76,7 +76,7 @@ public class PreferencesHelper {
     }
 
     public Boolean getExistCarer2() {
-        return _defaultPrefs.getBoolean(KEY_PREFS_CAREREXIST1, false);
+        return _defaultPrefs.getBoolean(KEY_PREFS_CAREREXIST2, false);
     }
 
     public ArrayList<Map<String, String>> getCarerHashMap() {
@@ -96,8 +96,7 @@ public class PreferencesHelper {
             map.put("carername", getCarerName2());
             map.put("carerid", getCarerId2());
 
-            mylist.add(map);
-
+            mylist.add(map); //FIXME: Crash if only one carer has been selected
         }
 
         return mylist;
