@@ -10,7 +10,7 @@ import java.io.File;
 public class FileHelper {
 
     public void deleteAudioFileForReminder(Reminder reminder) {
-        String filepath = reminder.getAudioFilepath();
+        String filepath = reminder.getAudiofilepath();
         File file = new File(filepath);
         file.delete();
     }

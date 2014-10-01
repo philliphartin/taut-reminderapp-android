@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * Created by philliphartin on 30/09/2014.
  */
+
 public class PreferencesHelper {
     //Shared Preferences
     public static final String KEY_PREFS_INITIALISED = "initialised";
@@ -44,13 +45,29 @@ public class PreferencesHelper {
         this._sharedPrefsEditor = _sharedPrefs.edit();
     }
 
+    //Get Intialised
+    public Boolean getInitialised() {
+        return _sharedPrefs.getBoolean(KEY_PREFS_INITIALISED, false); // Get our string from prefs or return an empty string
+    }
+
+    public void saveIntialised(Boolean bool) {
+        _sharedPrefsEditor.putBoolean(KEY_PREFS_INITIALISED, bool);
+        _sharedPrefsEditor.commit();
+    }
+
     public String getUserName() {
         return _defaultPrefs.getString(KEY_PREFS_USERNAME, DEFAULT_STRING);
     }
 
+    public String getServerURL() {
+        return _defaultPrefs.getString(KEY_PREFS_SERVERURL, DEFAULT_STRING);
+    }
+
+
     public int getUserId() {
         return Integer.parseInt(_defaultPrefs.getString(KEY_PREFS_USERID, DEFAULT_STRING));
     }
+
     public String getUserIdAsString() {
         return _defaultPrefs.getString(KEY_PREFS_USERID, DEFAULT_STRING);
     }
@@ -100,16 +117,6 @@ public class PreferencesHelper {
         }
 
         return mylist;
-    }
-
-    //Get Intialised
-    public Boolean getInitialised() {
-        return _sharedPrefs.getBoolean(KEY_PREFS_INITIALISED, false); // Get our string from prefs or return an empty string
-    }
-
-    public void saveIntialised(Boolean bool) {
-        _sharedPrefsEditor.putBoolean(KEY_PREFS_INITIALISED, bool);
-        _sharedPrefsEditor.commit();
     }
 
 

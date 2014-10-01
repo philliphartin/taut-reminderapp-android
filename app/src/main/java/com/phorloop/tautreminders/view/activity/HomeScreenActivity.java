@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.phorloop.tautreminders.R;
 import com.phorloop.tautreminders.controller.helpers.DateHelper;
 import com.phorloop.tautreminders.controller.helpers.PreferencesHelper;
+import com.phorloop.tautreminders.controller.http.RemoteDatabaseClientUsage;
 import com.phorloop.tautreminders.view.dialog.WelcomeDialog;
 
 
@@ -68,8 +69,36 @@ public class HomeScreenActivity extends Activity {
         if (id == R.id.action_settings) {
             Intent intent_preferences = new Intent(this, SettingsActivity.class);
             startActivity(intent_preferences);
+        } else if (id == R.id.action_upload) {
+            RemoteDatabaseClientUsage rDCU = new RemoteDatabaseClientUsage(this);
+            rDCU.postAcknowledgementLogs();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        //Todo: Create toast that says press back again to exit.
+        //Todo: Implement back press counter.
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to exit?")
+                .setCancelable(false)
+                .setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //Do your coding here. For Positive button
+                                finish();
+                            }
+                        })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     /**
@@ -121,31 +150,6 @@ public class HomeScreenActivity extends Activity {
             DateHelper dateHelper = new DateHelper();
             return dateHelper.getDateHumanReadableFromUnixTime(dateHelper.getUnixTimeNow());
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        //Todo: Create toast that says press back again to exit.
-        //Todo: Implement back press counter.
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to exit?")
-                .setCancelable(false)
-                .setPositiveButton("Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //Do your coding here. For Positive button
-                                finish();
-                            }
-                        })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
 

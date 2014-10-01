@@ -176,8 +176,8 @@ public class CreateNewReminderActivity extends Activity {
                     } else {
 
                         //Set Audio Details
-                        reminder.setAudioDuration(rec_duration);
-                        reminder.setAudioFilepath(rec_filepath);
+                        reminder.setAudioduration(rec_duration);
+                        reminder.setAudiofilepath(rec_filepath);
 
                         getFragmentManager().beginTransaction()
                                 .hide(getFragmentManager().findFragmentByTag(currentFragment))

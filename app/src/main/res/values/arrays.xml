@@ -5,7 +5,7 @@
         <item name="test">Test Server (phorLoop)</item>
     </string-array>
     <string-array name="serverUrl">
-        <item name="live">http://193.61.148.92/api/taut/scripts/log_upload.php</item>
-        <item name="test">http://api.phorloop.com/taut/scripts/log_upload.php</item>
+        <item name="live">http://193.61.148.92/api/taut/scripts/</item>
+        <item name="test">http://api.phorloop.com/taut/scripts/</item>
     </string-array>
 </resources>

@@ -1,102 +1,96 @@
 package com.phorloop.tautreminders.model.sugarorm;
 
-import android.util.Log;
-
-import com.google.gson.Gson;
 import com.orm.SugarRecord;
-import com.phorloop.tautreminders.model.gson.AcknowledgementGSON;
 
 /**
  * Created by philliphartin on 24/09/2014.
  */
 public class Acknowledgement extends SugarRecord<Acknowledgement> {
 
-    long reminderId;
-    int patientId;
-    int acknowledgedByUser;
-    long timeToAcknowledge;
-    int batteryLevel;
-    int listenCount;
-    int sentToServer;
-
+    long reminderid;
+    int patientid;
+    int acknowledgedbyuser;
+    long timetoacknowledge;
+    int batterylevel;
+    int listencount;
+    int senttoserver;
 
     public Acknowledgement() {
     }
 
-    public Acknowledgement(long reminderId, int patientId, int acknowledgedByUser, int timeToAcknowledge, int batteryLevel, int listenCount, int sentToServer) {
-        this.reminderId = reminderId;
-        this.patientId = patientId;
-        this.acknowledgedByUser = acknowledgedByUser;
-        this.timeToAcknowledge = timeToAcknowledge;
-        this.batteryLevel = batteryLevel;
-        this.listenCount = listenCount;
-        this.sentToServer = sentToServer;
+    public Acknowledgement(long reminderid, int patientid, int acknowledgedbyuser, long timetoacknowledge, int batterylevel, int listencount, int senttoserver) {
+        this.reminderid = reminderid;
+        this.patientid = patientid;
+        this.acknowledgedbyuser = acknowledgedbyuser;
+        this.timetoacknowledge = timetoacknowledge;
+        this.batterylevel = batterylevel;
+        this.listencount = listencount;
+        this.senttoserver = senttoserver;
     }
 
-    public long getReminderId() {
-        return reminderId;
+    public long getReminderid() {
+        return reminderid;
     }
 
-    public void setReminderId(long reminderId) {
-        this.reminderId = reminderId;
+    public void setReminderid(long reminderid) {
+        this.reminderid = reminderid;
     }
 
-    public int getPatientId() {
-        return patientId;
+    public int getPatientid() {
+        return patientid;
     }
 
-    public void setPatientId(int patientId) {
-        this.patientId = patientId;
+    public void setPatientid(int patientid) {
+        this.patientid = patientid;
     }
 
-    public int getAcknowledgedByUser() {
-        return acknowledgedByUser;
+    public int getAcknowledgedbyuser() {
+        return acknowledgedbyuser;
     }
 
-    public void setAcknowledgedByUser(int acknowledgedByUser) {
-        this.acknowledgedByUser = acknowledgedByUser;
+    public void setAcknowledgedbyuser(int acknowledgedbyuser) {
+        this.acknowledgedbyuser = acknowledgedbyuser;
     }
 
-    public long getTimeToAcknowledge() {
-        return timeToAcknowledge;
+    public long getTimetoacknowledge() {
+        return timetoacknowledge;
     }
 
-    public void setTimeToAcknowledge(long timeToAcknowledge) {
-        this.timeToAcknowledge = timeToAcknowledge;
+    public void setTimetoacknowledge(long timetoacknowledge) {
+        this.timetoacknowledge = timetoacknowledge;
     }
 
-    public int getBatteryLevel() {
-        return batteryLevel;
+    public int getBatterylevel() {
+        return batterylevel;
     }
 
-    public void setBatteryLevel(int batteryLevel) {
-        this.batteryLevel = batteryLevel;
+    public void setBatterylevel(int batterylevel) {
+        this.batterylevel = batterylevel;
     }
 
-    public int getListenCount() {
-        return listenCount;
+    public int getListencount() {
+        return listencount;
     }
 
-    public void setListenCount(int listenCount) {
-        this.listenCount = listenCount;
+    public void setListencount(int listencount) {
+        this.listencount = listencount;
     }
 
-    public int getSentToServer() {
-        return sentToServer;
+    public int getSenttoserver() {
+        return senttoserver;
     }
 
-    public void setSentToServer(int sentToServer) {
-        this.sentToServer = sentToServer;
+    public void setSenttoserver(int senttoserver) {
+        this.senttoserver = senttoserver;
     }
 
-    @Override
-    public void save() {
-        super.save();
-
-        AcknowledgementGSON acknowledgementGSON = new AcknowledgementGSON(getId());
-        Gson gson = new Gson();
-        String json = gson.toJson(acknowledgementGSON);
-
-        Log.d("Acknowledgement", json);
-    }
+    //    @Override
+//    public void save() {
+//        super.save();
+//
+//        AcknowledgementGSON acknowledgementGSON = new AcknowledgementGSON(getId());
+//        Gson gson = new Gson();
+//        String json = gson.toJson(acknowledgementGSON);
+//        Log.d("Acknowledgement", json);
+//    }
 }

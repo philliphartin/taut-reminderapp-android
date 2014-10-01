@@ -29,9 +29,11 @@ public class DemoReminders {
 
         DateHelper dateHelper = new DateHelper();
         long numberOfReminders = 7;
+        int minuteSpacer = 1;
+
         for (int i = 0; i < numberOfReminders; i++) {
 
-            int minutesToAdd = (i + 1) * 5;
+            int minutesToAdd = (i + 1) * minuteSpacer;
 
             long unixTime = dateHelper.getUnixTimePlusMinutes(minutesToAdd);
             String date = dateHelper.getDateSaveReadableFromUnixTime(unixTime);
@@ -122,7 +124,7 @@ public class DemoReminders {
 
     private String getRandomRepeatFreq() {
         Random rnd = new Random();
-        int random = rnd.nextInt(2);
+        int random = rnd.nextInt(3);
         String type;
 
         switch (random) {
@@ -130,7 +132,7 @@ public class DemoReminders {
                 type = "Never";
                 break;
             case 1:
-                type = "Daily";
+                type = "Everyday";
                 break;
             case 2:
                 type = "Weekly";

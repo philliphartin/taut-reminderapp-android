@@ -86,6 +86,7 @@
     <orderEntry type="library" exported="" name="funf-v0.5.0RC1" level="project" />
     <orderEntry type="library" exported="" name="mixpanel-android-4.3.1" level="project" />
     <orderEntry type="library" exported="" name="gson-1.7.2" level="project" />
+    <orderEntry type="library" exported="" name="android-async-http-1.4.6" level="project" />
   </component>
 </module>
 

@@ -29,6 +29,13 @@ public class ScheduleHelper {
         this.mContext = context;
     }
 
+    private static DateTime calcNextDate(DateTime d, int day) {
+        if (d.getDayOfWeek() > day) {
+            d = d.plusWeeks(1);
+        }
+        return d.withDayOfWeek(day);
+    }
+
     @TargetApi(Build.VERSION_CODES.KITKAT) // For KitKat and above to set exact time
     public void scheduleReminder(Reminder reminder) {
 
@@ -59,7 +66,6 @@ public class ScheduleHelper {
         Log.d(LOG, "Reminder " + reminderId + ": unScheduled");
         alarmManager.cancel(cancelIntent);
     }
-
 
     public void rescheduleReminder(Reminder reminder) {
         //Create Joda Instant (from reminder unixtime)
@@ -110,13 +116,6 @@ public class ScheduleHelper {
             Log.d(LOG, "Repeat required: " + reminder.getRepeatfreq());
             return true;
         }
-    }
-
-    private static DateTime calcNextDate(DateTime d, int day) {
-        if (d.getDayOfWeek() > day) {
-            d = d.plusWeeks(1);
-        }
-        return d.withDayOfWeek(day);
     }
 
     private DateTime addDaysAndCheck(DateTime dateTime, int daysToAdd) {

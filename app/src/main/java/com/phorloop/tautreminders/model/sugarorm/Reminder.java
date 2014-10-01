@@ -18,13 +18,13 @@ public class Reminder extends SugarRecord<Reminder> {
     String createdby;
     int createdbyid;
     int active;
-    String audioFilepath;
-    long audioDuration;
+    String audiofilepath;
+    long audioduration;
 
     public Reminder() {
     }
 
-    public Reminder(String format, String time, String date, long unixtime, String dayofweek, String type, String description, String repeatfreq, String createdby, int createdbyid, int active, String audioFilepath, long audioDuration) {
+    public Reminder(String format, String time, String date, long unixtime, String dayofweek, String type, String description, String repeatfreq, String createdby, int createdbyid, int active, String audiofilepath, long audioduration) {
         this.format = format;
         this.time = time;
         this.date = date;
@@ -36,8 +36,8 @@ public class Reminder extends SugarRecord<Reminder> {
         this.createdby = createdby;
         this.createdbyid = createdbyid;
         this.active = active;
-        this.audioFilepath = audioFilepath;
-        this.audioDuration = audioDuration;
+        this.audiofilepath = audiofilepath;
+        this.audioduration = audioduration;
     }
 
     public Reminder(Reminder remindertoClone) {
@@ -52,8 +52,8 @@ public class Reminder extends SugarRecord<Reminder> {
         this.createdby = remindertoClone.createdby;
         this.createdbyid = remindertoClone.createdbyid;
         this.active = remindertoClone.active;
-        this.audioFilepath = remindertoClone.audioFilepath;
-        this.audioDuration = remindertoClone.audioDuration;
+        this.audiofilepath = remindertoClone.audiofilepath;
+        this.audioduration = remindertoClone.audioduration;
     }
 
     public String getFormat() {
@@ -144,22 +144,21 @@ public class Reminder extends SugarRecord<Reminder> {
         this.active = active;
     }
 
-    public String getAudioFilepath() {
-        return audioFilepath;
+    public String getAudiofilepath() {
+        return audiofilepath;
     }
 
-    public void setAudioFilepath(String audioFilepath) {
-        this.audioFilepath = audioFilepath;
+    public void setAudiofilepath(String audiofilepath) {
+        this.audiofilepath = audiofilepath;
     }
 
-    public long getAudioDuration() {
-        return audioDuration;
+    public long getAudioduration() {
+        return audioduration;
     }
 
-    public void setAudioDuration(long audioDuration) {
-        this.audioDuration = audioDuration;
+    public void setAudioduration(long audioduration) {
+        this.audioduration = audioduration;
     }
-
 
 }
 

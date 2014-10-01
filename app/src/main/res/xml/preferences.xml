@@ -90,7 +90,7 @@
         android:key="sync_category"
         android:title="Sync Setup">
         <ListPreference
-            android:defaultValue="http://193.61.148.92/api/taut/scripts/log_upload.php"
+            android:defaultValue="http://193.61.148.92/api/taut/scripts/"
             android:entries="@array/serverNames"
             android:entryValues="@array/serverUrl"
             android:key="database"

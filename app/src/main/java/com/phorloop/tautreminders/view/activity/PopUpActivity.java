@@ -124,7 +124,7 @@ public class PopUpActivity extends Activity {
             playReminderBtn.setTextSize(20);
             playReminderBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.audio_listen, 0);
             playReminderBtn.setBackgroundResource(R.drawable.button_all);
-            long audioDurationInSeconds = reminder.getAudioDuration() / 1000;
+            long audioDurationInSeconds = reminder.getAudioduration() / 1000;
             playReminderBtn.setText("Listen to Voice Reminder" + '\n' + "(" + audioDurationInSeconds + "secs)");
             playReminderBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -140,7 +140,7 @@ public class PopUpActivity extends Activity {
                         voicePlayerListened = true; //update flag
                     }
 
-                    playVoiceReminder(reminder.getAudioFilepath());
+                    playVoiceReminder(reminder.getAudiofilepath());
                 }
             });
 
@@ -398,9 +398,9 @@ public class PopUpActivity extends Activity {
         AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper(this);
 
         //Set acknowledgment properties before passing to helper
-        acknowledgement.setTimeToAcknowledge(getTimeToAcknowledge());
-        acknowledgement.setBatteryLevel((int) getBatteryLevel());
-        acknowledgement.setListenCount(getListenCount());
+        acknowledgement.setTimetoacknowledge(getTimeToAcknowledge());
+        acknowledgement.setBatterylevel((int) getBatteryLevel());
+        acknowledgement.setListencount(getListenCount());
 
         acknowledgementHelper.saveAcknowledgmentLogforReminder(reminder, acknowledgement, userInteraction);
 

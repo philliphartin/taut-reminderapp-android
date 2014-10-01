@@ -21,21 +21,21 @@ public class AcknowledgementGSON {
     String repeatfreq;
     String createdby;
     int createdbyid;
-    long audioDuration;
+    long audioduration;
 
     //AcknowledgementData
-    int patientId;
-    int acknowledgedByUser;
-    long timeToAcknowledge;
-    int batteryLevel;
-    int listenCount;
+    int patientid;
+    int acknowledgedbyuser;
+    long timetoacknowledge;
+    int batterylevel;
+    int listencount;
 
     public AcknowledgementGSON(long acknowledgementId) {
 
         //Get acknowledgment object
         Acknowledgement acknowledgement = Acknowledgement.findById(Acknowledgement.class, acknowledgementId);
         //Get reminder object for acknowledgement
-        Reminder reminder = Reminder.findById(Reminder.class, acknowledgement.getReminderId());
+        Reminder reminder = Reminder.findById(Reminder.class, acknowledgement.getReminderid());
 
         this.format = reminder.getFormat();
         this.time = reminder.getTime();
@@ -47,13 +47,37 @@ public class AcknowledgementGSON {
         this.repeatfreq = reminder.getRepeatfreq();
         this.createdby = reminder.getCreatedby();
         this.createdbyid = reminder.getCreatedbyid();
-        this.audioDuration = reminder.getAudioDuration();
-        this.patientId = acknowledgement.getPatientId();
-        this.acknowledgedByUser = acknowledgement.getAcknowledgedByUser();
-        this.timeToAcknowledge = acknowledgement.getTimeToAcknowledge();
-        this.batteryLevel = acknowledgement.getBatteryLevel();
-        this.listenCount = acknowledgement.getListenCount();
+        this.audioduration = reminder.getAudioduration();
+        this.patientid = acknowledgement.getPatientid();
+        this.acknowledgedbyuser = acknowledgement.getAcknowledgedbyuser();
+        this.timetoacknowledge = acknowledgement.getTimetoacknowledge();
+        this.batterylevel = acknowledgement.getBatterylevel();
+        this.listencount = acknowledgement.getListencount();
     }
+
+    public AcknowledgementGSON(Acknowledgement acknowledgement) {
+
+        //Get reminder object for acknowledgement
+        Reminder reminder = Reminder.findById(Reminder.class, acknowledgement.getReminderid());
+
+        this.format = reminder.getFormat();
+        this.time = reminder.getTime();
+        this.date = reminder.getDate();
+        this.unixtime = reminder.getUnixtime();
+        this.dayofweek = reminder.getDayofweek();
+        this.type = reminder.getType();
+        this.description = reminder.getDescription();
+        this.repeatfreq = reminder.getRepeatfreq();
+        this.createdby = reminder.getCreatedby();
+        this.createdbyid = reminder.getCreatedbyid();
+        this.audioduration = reminder.getAudioduration();
+        this.patientid = acknowledgement.getPatientid();
+        this.acknowledgedbyuser = acknowledgement.getAcknowledgedbyuser();
+        this.timetoacknowledge = acknowledgement.getTimetoacknowledge();
+        this.batterylevel = acknowledgement.getBatterylevel();
+        this.listencount = acknowledgement.getListencount();
+    }
+
 
     public String getFormat() {
         return format;
@@ -135,51 +159,51 @@ public class AcknowledgementGSON {
         this.createdbyid = createdbyid;
     }
 
-    public long getAudioDuration() {
-        return audioDuration;
+    public long getAudioduration() {
+        return audioduration;
     }
 
-    public void setAudioDuration(long audioDuration) {
-        this.audioDuration = audioDuration;
+    public void setAudioduration(long audioduration) {
+        this.audioduration = audioduration;
     }
 
-    public int getPatientId() {
-        return patientId;
+    public int getPatientid() {
+        return patientid;
     }
 
-    public void setPatientId(int patientId) {
-        this.patientId = patientId;
+    public void setPatientid(int patientid) {
+        this.patientid = patientid;
     }
 
-    public int getAcknowledgedByUser() {
-        return acknowledgedByUser;
+    public int getAcknowledgedbyuser() {
+        return acknowledgedbyuser;
     }
 
-    public void setAcknowledgedByUser(int acknowledgedByUser) {
-        this.acknowledgedByUser = acknowledgedByUser;
+    public void setAcknowledgedbyuser(int acknowledgedbyuser) {
+        this.acknowledgedbyuser = acknowledgedbyuser;
     }
 
-    public long getTimeToAcknowledge() {
-        return timeToAcknowledge;
+    public long getTimetoacknowledge() {
+        return timetoacknowledge;
     }
 
-    public void setTimeToAcknowledge(long timeToAcknowledge) {
-        this.timeToAcknowledge = timeToAcknowledge;
+    public void setTimetoacknowledge(long timetoacknowledge) {
+        this.timetoacknowledge = timetoacknowledge;
     }
 
-    public int getBatteryLevel() {
-        return batteryLevel;
+    public int getBatterylevel() {
+        return batterylevel;
     }
 
-    public void setBatteryLevel(int batteryLevel) {
-        this.batteryLevel = batteryLevel;
+    public void setBatterylevel(int batterylevel) {
+        this.batterylevel = batterylevel;
     }
 
-    public int getListenCount() {
-        return listenCount;
+    public int getListencount() {
+        return listencount;
     }
 
-    public void setListenCount(int listenCount) {
-        this.listenCount = listenCount;
+    public void setListencount(int listencount) {
+        this.listencount = listencount;
     }
 }
