@@ -1,6 +1,8 @@
 package com.phorloop.tautreminders.controller.demo;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.phorloop.tautreminders.controller.helpers.DateHelper;
 import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
@@ -12,11 +14,13 @@ import java.util.Random;
  * Created by philliphartin on 23/09/2014.
  */
 public class DemoReminders {
+    private static final String LOG = "DemoReminders";
+
 
     Context mContext;
 
     public DemoReminders(Context context) {
-        context = this.mContext;
+        this.mContext = context;
     }
 
     public void generateRemindersForDemos() {
@@ -48,6 +52,10 @@ public class DemoReminders {
 
             reminderHelper.saveNewReminder(reminder);
         }
+
+        Toast.makeText(mContext, "Generated " + numberOfReminders + " reminders", Toast.LENGTH_SHORT).show();
+        Log.d(LOG, "Generated " + numberOfReminders + " reminders");
+
     }
 
     private String returnReminderTypeForNumber(int number) {
@@ -133,5 +141,6 @@ public class DemoReminders {
         }
         return type;
     }
+
 
 }

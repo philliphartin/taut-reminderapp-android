@@ -102,14 +102,12 @@
     <PreferenceCategory
         android:key="version_cat"
         android:title="Version Info">
-        <ListPreference
-            android:enabled="false"
+        <Preference
+            android:enabled="true"
             android:key="version"
-            android:persistent="false"
-            android:selectable="false"
-            android:shouldDisableView="false"
             android:summary="Build: "
-            android:title="Version: " />
+            android:title="Version: "></Preference>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

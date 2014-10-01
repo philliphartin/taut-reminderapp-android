@@ -233,7 +233,7 @@ public class PopUpActivity extends Activity {
 
     private void startPopUpSoundAndVibration() {
         //Sound
-        notificationPlayer = MediaPlayer.create(this, R.raw.airhorn); //FIXME: Change sound for release
+        notificationPlayer = MediaPlayer.create(this, R.raw.sound); //FIXME: Change sound for release
         notificationPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {

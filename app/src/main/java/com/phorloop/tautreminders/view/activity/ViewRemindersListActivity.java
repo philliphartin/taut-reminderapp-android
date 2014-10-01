@@ -16,9 +16,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
 import com.phorloop.tautreminders.controller.listviewadapter.ListAdapterForReminders;
 import com.phorloop.tautreminders.controller.listviewadapter.ListItem;
-import com.phorloop.tautreminders.controller.helpers.ReminderHelper;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import java.util.List;
 public class ViewRemindersListActivity extends Activity {
     private static final String LOGa = "ViewRemindersListActivity";
     private Context context = this;
+    private Toast mToast;
 
 
     public int selectedItem = -1;
@@ -76,12 +77,13 @@ public class ViewRemindersListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminder_list);
 
+        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+
         //Setup Actionbar
         ActionBar actionBar = getActionBar();
         actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setTitle("View All Reminders");
-
 
         //List Setup
         activeRemindersList = getListData();
@@ -132,11 +134,15 @@ public class ViewRemindersListActivity extends Activity {
         try {
             Object o = listView.getItemAtPosition(position);
             ListItem reminderData = (ListItem) o;
-            Toast.makeText(ViewRemindersListActivity.this, reminderData.getDesc().toString(), Toast.LENGTH_SHORT).show();
+            mToast.setText(reminderData.getDesc().toString());
+
         } catch (NullPointerException npe) {
             Log.e(LOGa, "" + npe.toString());
-            Toast.makeText(ViewRemindersListActivity.this, "There was a problem getting the description, please try again", Toast.LENGTH_SHORT).show();
+            mToast.setText("There was a problem getting the description, please try again");
         }
+
+        mToast.setDuration(Toast.LENGTH_LONG);
+        mToast.show();
     }
 
     public void deleteItem(int position) {
@@ -144,15 +150,16 @@ public class ViewRemindersListActivity extends Activity {
             //Get object at position
             Object o = listView.getItemAtPosition(position);
             long reminderId = ((ListItem) o).getId();
-
             removeAndUnscheduleReminder(reminderId);
-
-            Toast.makeText(ViewRemindersListActivity.this, "Reminder Deleted", Toast.LENGTH_SHORT).show();
+            mToast.setText("Reminder Deleted");
 
         } catch (NullPointerException npe) {
             Log.e(LOGa, "" + npe.toString());
-            Toast.makeText(ViewRemindersListActivity.this, "There was a problem deleting the reminder, please try again", Toast.LENGTH_SHORT).show();
+            mToast.setText("There was a problem deleting the reminder, please try again");
         }
+
+        mToast.setDuration(Toast.LENGTH_LONG);
+        mToast.show();
 
         activeRemindersList = getListData();
         ListAdapterForReminders listAdapterRefresh = new ListAdapterForReminders(this, activeRemindersList);

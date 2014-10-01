@@ -6,14 +6,16 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.phorloop.tautreminders.R;
+import com.phorloop.tautreminders.controller.demo.DemoReminders;
 import com.phorloop.tautreminders.controller.helpers.PreferencesHelper;
 
 /**
@@ -78,12 +80,68 @@ public class SettingsActivity extends Activity {
             populateVersionAndBuildDetails();
         }
 
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
 
         private void populateVersionAndBuildDetails() {
-            ListPreference versionPref = (ListPreference) findPreference("version");
-            versionPref.setTitle("Version" + ": " + getVersionNumber());
-            versionPref.setSummary("Build" + ": " + getBuildNumber());
+            Preference version = findPreference("version");
+            version.setTitle("Version" + ": " + getVersionNumber());
+            version.setSummary("Build" + ": " + getBuildNumber());
+            version.setSelectable(true);
+            version.setOnPreferenceClickListener(onClickDemoCreator);
         }
+
+        private Preference.OnPreferenceClickListener onClickDemoCreator = new Preference.OnPreferenceClickListener() {
+
+            int count = 0;
+            int numberPressRequired = 8;
+            Toast mToast;
+
+            public boolean onPreferenceClick(Preference pref) {
+
+                count = count + 1;
+                int remaining = calculateRemainingPresses();
+
+                if (readyForDisplay(remaining)) {
+
+                    if (mToast == null) {
+                        mToast = Toast.makeText(getActivity(), "Press " + remaining + " more times to create demo reminders", Toast.LENGTH_LONG);
+                    }
+                    mToast.setText("Press " + remaining + " more times to create demo reminders");
+                    mToast.setDuration(Toast.LENGTH_LONG);
+                    mToast.show();
+                }
+
+                if (numberRemainingIsZero(remaining)) {
+                    mToast.cancel(); //Cancel the toast
+                    DemoReminders demoReminders = new DemoReminders(getActivity());
+                    demoReminders.generateRemindersForDemos();
+                }
+                return false;
+            }
+
+            private int calculateRemainingPresses() {
+                return numberPressRequired - count;
+            }
+
+            private boolean readyForDisplay(int remainingPresses) {
+                if (remainingPresses <= 5 && remainingPresses > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            private boolean numberRemainingIsZero(int remaining) {
+                if (remaining == 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        };
 
         private String getVersionNumber() {
             String version;
@@ -218,4 +276,5 @@ public class SettingsActivity extends Activity {
             return false;
         }
     }
+
 }
