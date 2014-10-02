@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,6 +30,8 @@ import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Phillip J Hartin on 20/10/13.
@@ -38,31 +39,60 @@ import java.util.Calendar;
 
 public class PopUpActivity extends Activity {
     private final static String LOG = "PopUpActivity";
-
-    //Components
-    private static MediaPlayer voicePlayer;
-    private static MediaPlayer notificationPlayer;
-    private static AudioManager audio;
-    private static Vibrator vib;
-    private Handler myHandler = new Handler();
-
     //Screen delay before auto closing
-    private final int delayTime = 60000;   //60secs
+
+    private final int delayTime = 60000;   //6ti0secs
+    //Statistics to log
+    private long timeToAcknowledge;
+    //Components
+    private MediaPlayer voicePlayer;
+    private MediaPlayer notificationPlayer;
+    private AudioManager audio;
+    private Vibrator vib;
 
     //Reminder
-    private static Reminder reminder;
-
+    private Reminder reminder;
     //Initialise Log Object
-    private static Acknowledgement acknowledgement = new Acknowledgement();
-
+    private Acknowledgement acknowledgement = new Acknowledgement();
     //Instance tracking
-    private static long unixTimePopUpDelivered;
-    private static int listenCount;
-    private static Boolean voicePlayerListened = false;
-    private static Boolean userInteraction = false;
+    private long unixTimePopUpDelivered;
+    private int listenCount;
+    private Boolean voicePlayerListened = false;
+    private Boolean userInteraction = false;
+    //Timers
+    private TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            userInteraction = false;
+            finish();
+        }
+    };
+    private Timer timer = new Timer();
 
-    //Statistics to log
-    private static long timeToAcknowledge;
+    private long getTimeToAcknowledge() {
+        return timeToAcknowledge;
+    }
+
+    private void setTimeToAcknowledge(long timeToAcknowledge) {
+        this.timeToAcknowledge = timeToAcknowledge;
+    }
+
+    //Getter Setters
+    private long getUnixTimePopUpDelivered() {
+        return unixTimePopUpDelivered;
+    }
+
+    private void setUnixTimePopUpDelivered(long unixTimePopUpDelivered) {
+        this.unixTimePopUpDelivered = unixTimePopUpDelivered;
+    }
+
+    private int getListenCount() {
+        return listenCount;
+    }
+
+    private void setListenCount(int listenCount) {
+        this.listenCount = listenCount;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +102,13 @@ public class PopUpActivity extends Activity {
         //Record time that popup delivered
         setUnixTimePopUpDelivered(getCurrentUnixTime());
 
+        //TIMER METHOD
+        timer.schedule(timerTask, delayTime);
+
         //Get reminder object from intent
         Bundle extras = getIntent().getExtras();
         String reminderIdentifierExtra = extras.getString("reminderIdentifier");
         long reminderIdentifier = Long.parseLong(reminderIdentifierExtra);
-        //String reminderAsJSON = extras.getString("reminder");
-        //reminder = new Gson().fromJson(reminderAsJSON, Reminder.class);
         reminder = Reminder.findById(Reminder.class, reminderIdentifier);
 
         //Flags to turn screen on and attempt to unlock keyguard
@@ -95,8 +126,11 @@ public class PopUpActivity extends Activity {
         TextView tv_type = (TextView) findViewById(R.id.textView_dialog_reminderpopup_type);
         ImageView imageView_reminderType = (ImageView) findViewById(R.id.popupImage);
 
-        //Establish type of reminder
+        //START SOUND AND VIBRATION;
+        startPopUpSoundAndVibration();
 
+
+        //Establish type of reminder
         ReminderHelper reminderHelper = new ReminderHelper(this);
 
         if (reminderHelper.isVoiceReminder(reminder)) {
@@ -106,7 +140,6 @@ public class PopUpActivity extends Activity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mp.reset();
-                    Log.i(LOG, "VoicePlayer: Playback Complete");
                 }
             });
 
@@ -129,7 +162,6 @@ public class PopUpActivity extends Activity {
             playReminderBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(LOG, "Playing Voice Reminder");
                     //Enable OK Button
                     enableOKButton(true);
                     //Stop Notification Sounds
@@ -151,12 +183,6 @@ public class PopUpActivity extends Activity {
             //Is a basic reminder
             enableOKButton(true);
         }
-
-        //START SOUND AND VIBRATION;
-        startPopUpSoundAndVibration();
-
-        //TIMER METHOD
-        myHandler.postDelayed(closeScreen, delayTime);
 
         //Display reminder details
         String type = reminder.getType();
@@ -187,27 +213,15 @@ public class PopUpActivity extends Activity {
         });
     }
 
-
-    private void rescheduleReminderIfNeeded() {
-        ScheduleHelper scheduleHelper = new ScheduleHelper(this);
-        if (scheduleHelper.needsRescheduled(reminder)) {
-            scheduleHelper.rescheduleReminder(reminder);
-        }
-    }
-
-
     //Common methods
     private long getCurrentUnixTime() {
         Calendar calendar = Calendar.getInstance();
         long time = calendar.getTimeInMillis();
-        Log.d(LOG, "Current unixtime: " + time + "ms");
-
         return time;
     }
 
     private long getTimeDifference(long startTime, long endTime) {
         long difference = (endTime - startTime);
-        Log.d(LOG, "Time difference: " + difference + "ms");
         return difference;
     }
 
@@ -219,13 +233,9 @@ public class PopUpActivity extends Activity {
         if (level == -1 || scale == -1) {
             return 50.0f;
         }
-
         float batteryLevel = ((long) level / (float) scale) * 100.0f;
-        Log.d(LOG, "Battery Level: " + batteryLevel);
-
         return batteryLevel;
     }
-
 
     private void increaseListenCount() {
         setListenCount(getListenCount() + 1);
@@ -233,11 +243,10 @@ public class PopUpActivity extends Activity {
 
     private void startPopUpSoundAndVibration() {
         //Sound
-        notificationPlayer = MediaPlayer.create(this, R.raw.sound); //FIXME: Change sound for release
+        notificationPlayer = MediaPlayer.create(this, R.raw.sound);
         notificationPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                Log.i(LOG, "NotificationPlayer: Playback Complete");
                 mp.reset();
             }
         });
@@ -255,7 +264,6 @@ public class PopUpActivity extends Activity {
                 notificationPlayer.stop();
                 notificationPlayer.reset();
                 notificationPlayer.release();
-                Log.d(LOG, "notificationPlayer STOPPED");
             }
         } catch (IllegalStateException e) {
             Log.e(LOG, "notificationPlayer error: " + e);
@@ -282,7 +290,6 @@ public class PopUpActivity extends Activity {
             voicePlayer.prepare();
             voicePlayer.start();
             increaseListenCount();
-            Log.d(LOG, "Voice reminder playback started");
         } catch (IOException e) {
             Log.e(LOG, "setDataSource failed:" + e);
         }
@@ -293,7 +300,6 @@ public class PopUpActivity extends Activity {
             voicePlayer.stop();
             voicePlayer.reset();
             voicePlayer.release();
-            Log.d(LOG, "Voice reminder playback stopped");
         } catch (Exception e) {
             Log.w(LOG, "Unable to stop voiceplayer");
         }
@@ -324,50 +330,16 @@ public class PopUpActivity extends Activity {
         }
     }
 
-    //Closes activity after 60 seconds of inactivity
-    public void onUserInteraction() {
-        myHandler.removeCallbacks(closeScreen);
-        myHandler.postDelayed(closeScreen, delayTime);
-    }
-
-    private Runnable closeScreen = new Runnable() {
-        public void run() {
-            userInteraction = false;
-            finish();
-        }
-    };
-
+//    //Closes activity after 60 seconds of inactivity
+//    public void onUserInteraction() {
+//        timer.cancel();
+////        myHandler.removeCallbacks(closeScreen);
+////        myHandler.postDelayed(closeScreen, delayTime);
+//    }
 
     private void stopSoundVibrationVoice() {
         stopPopUpSoundAndVibration();
         stopVoiceReminder();
-    }
-
-    //Getter Setters
-    public static long getUnixTimePopUpDelivered() {
-        return unixTimePopUpDelivered;
-    }
-
-    public static void setUnixTimePopUpDelivered(long unixTimePopUpDelivered) {
-        PopUpActivity.unixTimePopUpDelivered = unixTimePopUpDelivered;
-    }
-
-    public static int getListenCount() {
-        return listenCount;
-    }
-
-    public static void setListenCount(int listenCount) {
-        PopUpActivity.listenCount = listenCount;
-        Log.d(LOG, "listenCount: " + listenCount);
-    }
-
-    public static long getTimeToAcknowledge() {
-        return timeToAcknowledge;
-    }
-
-    public static void setTimeToAcknowledge(long timeToAcknowledge) {
-
-        PopUpActivity.timeToAcknowledge = timeToAcknowledge;
     }
 
     private int convertBooleanToInt(Boolean bool) {
@@ -393,18 +365,18 @@ public class PopUpActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         stopSoundVibrationVoice();
 
+        //Log Acknowledgement
         AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper(this);
-
-        //Set acknowledgment properties before passing to helper
         acknowledgement.setTimetoacknowledge(getTimeToAcknowledge());
         acknowledgement.setBatterylevel((int) getBatteryLevel());
         acknowledgement.setListencount(getListenCount());
-
         acknowledgementHelper.saveAcknowledgmentLogforReminder(reminder, acknowledgement, userInteraction);
-
-        rescheduleReminderIfNeeded();
+        //Send details to rescheduler
+        ScheduleHelper scheduleHelper = new ScheduleHelper(this);
+        scheduleHelper.rescheduleReminder(reminder);
     }
 
     @Override

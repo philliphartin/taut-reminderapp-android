@@ -68,44 +68,48 @@ public class ScheduleHelper {
     }
 
     public void rescheduleReminder(Reminder reminder) {
-        //Create Joda Instant (from reminder unixtime)
-        long unixTime = reminder.getUnixtime();
-        Instant instantReminder = new Instant(unixTime);
-        DateTime dateTimeReminderOLD = instantReminder.toDateTime();
-        DateTime dateTimeReminderNEW = new DateTime();
-
-        Log.d(LOG, "Old time:" + " Y:" + dateTimeReminderOLD.getYear()
-                + " M:" + dateTimeReminderOLD.getMonthOfYear()
-                + " D:" + dateTimeReminderOLD.getDayOfMonth()
-                + " H:" + dateTimeReminderOLD.getHourOfDay()
-                + " M:" + dateTimeReminderOLD.getMinuteOfHour());
-
-        //Determine what the repeatType is
-        if (reminder.getRepeatfreq().equals("Weekly")) {
-            dateTimeReminderNEW = addDaysAndCheck(dateTimeReminderOLD, 7);
-        } else if (reminder.getRepeatfreq().equals("Everyday")) {
-            dateTimeReminderNEW = addDaysAndCheck(dateTimeReminderOLD, 1);
-        }
-
-        Log.d(LOG, "New time:" + " Y:" + dateTimeReminderNEW.getYear()
-                + " M:" + dateTimeReminderNEW.getMonthOfYear()
-                + " D:" + dateTimeReminderNEW.getDayOfMonth()
-                + " H:" + dateTimeReminderNEW.getHourOfDay()
-                + " M:" + dateTimeReminderNEW.getMinuteOfHour());
-
-        //Update reminder objects dates
-        DateHelper dateHelper = new DateHelper();
-        String date = dateHelper.getDateSaveReadableFromDateTime(dateTimeReminderNEW);
-        String time = dateHelper.getTimeSaveReadableFromDateTime(dateTimeReminderNEW);
-
-        reminder.setDate(date);
-        reminder.setTime(time);
-        reminder.setUnixtime(dateTimeReminderNEW.getMillis());
-        reminder.setDayofweek(dateTimeReminderNEW.dayOfWeek().getAsText());
-        reminder.setActive(1);
 
         ReminderHelper reminderHelper = new ReminderHelper(mContext);
-        reminderHelper.processRepeatReminder(reminder);
+
+        if (needsRescheduled(reminder)) {
+            //Get repeatFrequency
+            String repeatFreq = reminder.getRepeatfreq();
+
+            //Create Joda Instant
+            long unixTime = reminder.getUnixtime();
+            Instant instantReminder = new Instant(unixTime);
+            DateTime dateTimeReminderOLD = instantReminder.toDateTime();
+            DateTime dateTimeReminderNEW = new DateTime();
+
+            logDebugDateTimeDetails(dateTimeReminderOLD, "Old");
+            //Determine what the repeatType is
+            if (repeatFreq.equals("Weekly")) {
+                dateTimeReminderNEW = addDaysAndCheck(dateTimeReminderOLD, 7);
+            } else if (repeatFreq.equals("Everyday")) {
+                dateTimeReminderNEW = addDaysAndCheck(dateTimeReminderOLD, 1);
+            }
+            logDebugDateTimeDetails(dateTimeReminderNEW, "New");
+
+            //Init new date properties
+            DateHelper dateHelper = new DateHelper();
+            String newDate = dateHelper.getDateSaveReadableFromDateTime(dateTimeReminderNEW);
+            String newTime = dateHelper.getTimeSaveReadableFromDateTime(dateTimeReminderNEW);
+            long newUnixTime = dateTimeReminderNEW.getMillis();
+            String newDayOfWeek = dateTimeReminderNEW.dayOfWeek().getAsText();
+
+            //Assign properties to reminder object
+            reminder.setDate(newDate);
+            reminder.setTime(newTime);
+            reminder.setUnixtime(newUnixTime);
+            reminder.setDayofweek(newDayOfWeek);
+            reminder.setActive(1);
+
+            //Process repeat reminder
+            reminderHelper.processRepeatReminder(reminder);
+        } else {
+            // Repeat Not Needed
+            reminderHelper.softDeleteReminder(reminder);
+        }
     }
 
     public boolean needsRescheduled(Reminder reminder) {
@@ -117,6 +121,7 @@ public class ScheduleHelper {
             return true;
         }
     }
+
 
     private DateTime addDaysAndCheck(DateTime dateTime, int daysToAdd) {
 
@@ -145,5 +150,13 @@ public class ScheduleHelper {
             }
             acknowledgementHelper.logReminderAsMissed(reminder); // Log as missed for all
         }
+    }
+
+    private void logDebugDateTimeDetails(DateTime dateTime, String oldOrNew) {
+        Log.d(LOG, oldOrNew + " Y:" + dateTime.getYear()
+                + " M:" + dateTime.getMonthOfYear()
+                + " D:" + dateTime.getDayOfMonth()
+                + " H:" + dateTime.getHourOfDay()
+                + " M:" + dateTime.getMinuteOfHour());
     }
 }

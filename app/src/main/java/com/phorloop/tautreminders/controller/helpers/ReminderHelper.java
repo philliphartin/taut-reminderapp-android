@@ -29,12 +29,15 @@ public class ReminderHelper {
             return null;
         } else {
             return reminders.get(0);
-
         }
     }
 
     public List getActiveReminders() {
-        List<Reminder> reminders = Select.from(Reminder.class).where("active = 1").orderBy("unixtime").list();
+
+        List<Reminder> reminders =
+                Select.from(Reminder.class)
+                        .where(Condition.prop("active").eq(1)).orderBy("unixtime")
+                        .list(); // Is still active
 
         if (reminders.isEmpty()) {
             return Collections.emptyList();
@@ -42,7 +45,6 @@ public class ReminderHelper {
             return reminders;
         }
     }
-
 
     public void softDeleteReminderWithId(long id) {
         Reminder reminder = Reminder.findById(Reminder.class, id);
@@ -73,7 +75,7 @@ public class ReminderHelper {
 
     public void processRepeatReminder(Reminder reminder) {
         saveNewReminder(reminder);        //Save new reminder
-        softDeleteReminder(reminder);        //Make original non-active
+        softDeleteReminderWithId(reminder.getId()); //Make original non-active (use Id rather than passing object, as pushing object pushes new reminder object details
     }
 
 
@@ -92,9 +94,6 @@ public class ReminderHelper {
         return reminderList;
     }
 
-    public void setReminderFromPastAsMissed(Reminder reminder) {
-        reminder.setActive(0);
-    }
 
 //    public boolean isRepeatReminder(Reminder reminder) {
 //        if (reminder.getRepeatfreq().contains("Never")) {

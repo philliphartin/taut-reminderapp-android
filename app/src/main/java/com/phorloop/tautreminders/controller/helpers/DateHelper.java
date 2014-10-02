@@ -70,7 +70,7 @@ public class DateHelper {
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, dateTime.getYear());
-        calendar.set(Calendar.MONTH, dateTime.getMonthOfYear());
+        calendar.set(Calendar.MONTH, dateTime.getMonthOfYear() - 1); // Minus 1 to get correct index of month for calendar object
         calendar.set(Calendar.DAY_OF_MONTH, dateTime.getDayOfMonth());
 
         return sdf.format(calendar.getTime());
@@ -109,7 +109,7 @@ public class DateHelper {
         return sdf.format(calendar.getTime());
     }
 
-    public String getDayOfTheWeekFromUnixTime(long unixtime){
+    public String getDayOfTheWeekFromUnixTime(long unixtime) {
         Instant instant = new Instant(getUnixTimeNow());
         DateTime dateTime = instant.toDateTime();
 

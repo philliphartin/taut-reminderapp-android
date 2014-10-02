@@ -22,7 +22,6 @@ import com.phorloop.tautreminders.controller.listviewadapter.ListItem;
 import com.phorloop.tautreminders.model.sugarorm.Reminder;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -30,11 +29,8 @@ import java.util.List;
  */
 public class ViewRemindersListActivity extends Activity {
     private static final String LOGa = "ViewRemindersListActivity";
-    private Context context = this;
-    private Toast mToast;
-
-
     public int selectedItem = -1;
+    protected Object mActionMode;
     public ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
@@ -66,11 +62,11 @@ public class ViewRemindersListActivity extends Activity {
             mActionMode = null;
         }
     };
-
-    protected Object mActionMode;
     ListView listView;
     ListAdapterForReminders listAdapter;
     ArrayList activeRemindersList;
+    private Context context = this;
+    private Toast mToast;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,11 +100,6 @@ public class ViewRemindersListActivity extends Activity {
     }
 
     private ArrayList getListData() {
-        Calendar calendar = Calendar.getInstance();
-        //GET CURRENT DATE AS UNIX TIME
-        long unixCurrentTime = (calendar.getTimeInMillis() / 1000L);
-        Log.d(LOGa, "UnixCurrentTime: " + unixCurrentTime);
-
         //Find the reminders that are currently active
         ReminderHelper reminderHelper = new ReminderHelper(context);
         reminderHelper.getActiveReminders();

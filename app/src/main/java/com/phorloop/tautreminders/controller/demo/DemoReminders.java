@@ -46,10 +46,10 @@ public class DemoReminders {
             reminder.setTime(time);
             reminder.setDayofweek(dayOfWeek);
             reminder.setType(returnReminderTypeForNumber(i));
-            reminder.setDescription(getDescriptionForReminder(reminder.getType())); // TODO: Finish this return statement
+            reminder.setDescription(getDescriptionForReminder(reminder.getType()));
             reminder.setRepeatfreq(getRandomRepeatFreq());
             reminder.setCreatedby("User");
-            reminder.setCreatedbyid(1234);
+            reminder.setCreatedbyid(9999);
             reminder.setActive(1);
 
             reminderHelper.saveNewReminder(reminder);

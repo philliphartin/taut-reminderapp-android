@@ -1,6 +1,10 @@
 package com.phorloop.tautreminders.model.sugarorm;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
 import com.orm.SugarRecord;
+import com.phorloop.tautreminders.model.gson.ReminderGSON;
 
 /**
  * Created by philliphartin on 16/09/2014.
@@ -158,6 +162,16 @@ public class Reminder extends SugarRecord<Reminder> {
 
     public void setAudioduration(long audioduration) {
         this.audioduration = audioduration;
+    }
+
+    @Override
+    public void save() {
+        super.save();
+
+        ReminderGSON reminderGSON = new ReminderGSON(getId());
+        Gson gson = new Gson();
+        String json = gson.toJson(reminderGSON);
+        Log.d("Reminder", json);
     }
 
 }
