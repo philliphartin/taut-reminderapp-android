@@ -88,13 +88,13 @@ public class Acknowledgement extends SugarRecord<Acknowledgement> {
         this.senttoserver = senttoserver;
     }
 
-        @Override
+    @Override
     public void save() {
         super.save();
 
         AcknowledgementGSON acknowledgementGSON = new AcknowledgementGSON(getId());
         Gson gson = new Gson();
         String json = gson.toJson(acknowledgementGSON);
-        Log.d("Acknowledgement", json);
+        Log.i("Acknowledgement JSON: ", json);
     }
 }

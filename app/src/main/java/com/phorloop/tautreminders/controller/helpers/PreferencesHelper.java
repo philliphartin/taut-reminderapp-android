@@ -63,7 +63,6 @@ public class PreferencesHelper {
         return _defaultPrefs.getString(KEY_PREFS_SERVERURL, DEFAULT_STRING);
     }
 
-
     public int getUserId() {
         return Integer.parseInt(_defaultPrefs.getString(KEY_PREFS_USERID, DEFAULT_STRING));
     }
@@ -94,6 +93,14 @@ public class PreferencesHelper {
 
     public Boolean getExistCarer2() {
         return _defaultPrefs.getBoolean(KEY_PREFS_CAREREXIST2, false);
+    }
+
+    public Boolean anyCarerEnabled() {
+        if (getExistCarer1() || getExistCarer2()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public ArrayList<Map<String, String>> getCarerHashMap() {

@@ -78,6 +78,30 @@ public class CreateNewReminderActivity extends Activity {
     private static boolean repeatSat;
     private static boolean repeatSun;
 
+    //Common Methods
+    private static boolean allComplete(boolean[] values) {
+        for (boolean value : values) {
+            if (!value)
+                return false;
+        }
+        return true;
+    }
+
+    private static void createToastWithText(String text, Activity activity) {
+        SuperToast superToast = new SuperToast(activity);
+        superToast.setDuration(SuperToast.Duration.SHORT);
+        superToast.setText(text);
+        superToast.setIcon(SuperToast.Icon.Dark.INFO, SuperToast.IconPosition.LEFT);
+        superToast.setGravity(Gravity.BOTTOM, 0, 50);
+        superToast.show();
+    }
+
+    private static DateTime calcNextDate(DateTime d, int day) {
+        if (d.getDayOfWeek() > day) {
+            d = d.plusWeeks(1);
+        }
+        return d.withDayOfWeek(day);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,17 +168,27 @@ public class CreateNewReminderActivity extends Activity {
      */
     public static class RecordVoiceFragment extends Fragment {
         private static final String LOGf = "RecordVoiceFragment";
-        private String currentFragment = fTAG_recordvoice;
-
         //Method Specific items
         private static final String LOG = "New Reminder Audio";
         private static final String AUDIO_RECORDER_FOLDER = "TAUT/VoiceReminders";
         private static String rec_filepath = null;
-
         private static MediaPlayer player = null;
         private static AudioManager audio;
-        private MediaRecorder recorder = null;
         private static int rec_duration = 0;
+        private MediaRecorder recorder = null;
+        private String currentFragment = fTAG_recordvoice;
+        private MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
+            @Override
+            public void onError(MediaRecorder mr, int what, int extra) {
+                createToastWithText("Error: " + what + ", " + extra, getActivity());
+            }
+        };
+        private MediaRecorder.OnInfoListener infoListener = new MediaRecorder.OnInfoListener() {
+            @Override
+            public void onInfo(MediaRecorder mr, int what, int extra) {
+                createToastWithText("Warning: " + what + ", " + extra, getActivity());
+            }
+        };
 
         public RecordVoiceFragment() {
         }
@@ -278,8 +312,6 @@ public class CreateNewReminderActivity extends Activity {
             }
         }
 
-        ;
-
         private void stopRecording() {
             if (null != recorder) {
                 recorder.stop();
@@ -328,18 +360,9 @@ public class CreateNewReminderActivity extends Activity {
             }
         }
 
-        private MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
-            @Override
-            public void onError(MediaRecorder mr, int what, int extra) {
-                createToastWithText("Error: " + what + ", " + extra, getActivity());
-            }
-        };
-        private MediaRecorder.OnInfoListener infoListener = new MediaRecorder.OnInfoListener() {
-            @Override
-            public void onInfo(MediaRecorder mr, int what, int extra) {
-                createToastWithText("Warning: " + what + ", " + extra, getActivity());
-            }
-        };
+
+        ;
+
 
     }
 
@@ -349,18 +372,49 @@ public class CreateNewReminderActivity extends Activity {
 
     public static class PickDateFragment extends Fragment {
         private static final String LOGf = "PickDateFragment";
-        private String currentFragment = fTAG_pickdate;
+        //DATEPICKER
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
 
+                //Set Calendar Values
+                cal_selected.set(Calendar.YEAR, year);
+                cal_selected.set(Calendar.MONTH, monthOfYear);
+                cal_selected.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                DateHelper dateHelper = new DateHelper();
+                String humanFormat = dateHelper.getDateHumanReadableFromCalendar(cal_selected);
+
+                //Create Formats for display
+                button_pickDate.setText(humanFormat);
+
+                dateChosen = true;
+            }
+        };
+        //TIMEPICKER
+        final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                cal_selected.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                cal_selected.set(Calendar.MINUTE, minute);
+
+                DateHelper dateHelper = new DateHelper();
+                String humanFormat = dateHelper.getTimeHumanReadableFromCalendar(cal_selected);
+                button_pickTime.setText(humanFormat);
+
+                timeChosen = true;
+            }
+        };
+        //Method Specific items
+        Calendar cal_selected = Calendar.getInstance();
         //UI elements
         private Button button_pickDate;
         private Button button_pickTime;
-
         //Complete flags
         private Boolean timeChosen = false;
         private Boolean dateChosen = false;
-
-        //Method Specific items
-        Calendar cal_selected = Calendar.getInstance();
+        private String currentFragment = fTAG_pickdate;
 
         public PickDateFragment() {
         }
@@ -436,42 +490,6 @@ public class CreateNewReminderActivity extends Activity {
             return sdf_save.format(cal_selected.getTime());
         }
 
-        //DATEPICKER
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-
-                //Set Calendar Values
-                cal_selected.set(Calendar.YEAR, year);
-                cal_selected.set(Calendar.MONTH, monthOfYear);
-                cal_selected.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-                DateHelper dateHelper = new DateHelper();
-                String humanFormat = dateHelper.getDateHumanReadableFromCalendar(cal_selected);
-
-                //Create Formats for display
-                button_pickDate.setText(humanFormat);
-
-                dateChosen = true;
-            }
-        };
-
-        //TIMEPICKER
-        final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                cal_selected.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                cal_selected.set(Calendar.MINUTE, minute);
-
-                DateHelper dateHelper = new DateHelper();
-                String humanFormat = dateHelper.getTimeHumanReadableFromCalendar(cal_selected);
-                button_pickTime.setText(humanFormat);
-
-                timeChosen = true;
-            }
-        };
-
         private boolean dateAndTimeSelected(Boolean dateChosen, Boolean timeChosen) {
             if (!dateChosen && !timeChosen) {
                 createToastWithText("Ensure both date and time are selected", getActivity());
@@ -500,6 +518,7 @@ public class CreateNewReminderActivity extends Activity {
             }
         }
 
+
     }
 
     /**
@@ -507,8 +526,6 @@ public class CreateNewReminderActivity extends Activity {
      */
     public static class ADLTypeFragment extends Fragment {
         private static final String LOGf = "ADLTypeFragment";
-        private String currentFragment = fTAG_adltype;
-
         //UI elements
         Spinner spinnerADLType;
         EditText editTextDescription;
@@ -561,6 +578,10 @@ public class CreateNewReminderActivity extends Activity {
             reminder.setType(spinnerADLType.getSelectedItem().toString());
             reminder.setDescription(editTextDescription.getText().toString().trim());
         }
+
+        private String currentFragment = fTAG_adltype;
+
+
     }
 
     /**
@@ -568,21 +589,18 @@ public class CreateNewReminderActivity extends Activity {
      */
     public static class RepeatFrequencyFragment extends Fragment {
         private static final String LOGf = "RepeatFrequencyFragment";
-        private String currentFragment = fTAG_repeatfrequency;
-
-        //Complete flags
-        private Boolean repeatFrequencyChosen = false;
-        private Boolean customrepeatFrequencyChosen = false; //Set to true if normal chosen
-
         //UI elements
         LinearLayout layout_customOptions;
         RadioGroup radioGroup;
         RadioButton radioButton_weekly, radioButton_daily, radioButton_custom;
         CheckBox checkBox_mon, checkBox_tue, checkBox_wed, checkBox_thu, checkBox_fri, checkBox_sat, checkBox_sun;
         int checkboxesCount = 0;
-
         //Save details
         String repeat;
+        //Complete flags
+        private Boolean repeatFrequencyChosen = false;
+        private String currentFragment = fTAG_repeatfrequency;
+        private Boolean customrepeatFrequencyChosen = false; //Set to true if normal chosen
 
         public RepeatFrequencyFragment() {
         }
@@ -683,11 +701,29 @@ public class CreateNewReminderActivity extends Activity {
         }
 
         private void navigateToNextScreen() {
-            getFragmentManager().beginTransaction()
-                    .hide(getFragmentManager().findFragmentByTag(currentFragment))
-                    .add(R.id.container, new UserCheckFragment(), fTAG_checkuser)
-                    .addToBackStack(null)
-                    .commit();
+
+            PreferencesHelper preferencesHelper = new PreferencesHelper(getActivity());
+
+            //Check if carers are enabled.
+            //If YES, navigate to user confirmation screen
+            if (preferencesHelper.anyCarerEnabled()) {
+                getFragmentManager().beginTransaction()
+                        .hide(getFragmentManager().findFragmentByTag(currentFragment))
+                        .add(R.id.container, new UserCheckFragment(), fTAG_checkuser)
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+
+                //If NO, navigate to save screen
+                reminder.setCreatedby("User");
+                reminder.setCreatedbyid(preferencesHelper.getUserId());
+
+                getFragmentManager().beginTransaction()
+                        .hide(getFragmentManager().findFragmentByTag(currentFragment))
+                        .add(R.id.container, new ConfirmDetailsFragment(), fTAG_confirmdetails)
+                        .addToBackStack(null)
+                        .commit();
+            }
         }
 
         private boolean repeatSelected() {
@@ -698,7 +734,6 @@ public class CreateNewReminderActivity extends Activity {
                 return false;
             }
         }
-
 
         private boolean customRepeatSelected() {
             if (repeat.contains("Custom")) {
@@ -773,6 +808,8 @@ public class CreateNewReminderActivity extends Activity {
         private void finaliseDetails() {
             reminder.setRepeatfreq(repeat);
         }
+
+
     }
 
     /**
@@ -780,7 +817,6 @@ public class CreateNewReminderActivity extends Activity {
      */
     public static class UserCheckFragment extends Fragment {
         private static final String LOGf = "UserCheckFragment";
-        private String currentFragment = fTAG_checkuser;
 
         public UserCheckFragment() {
         }
@@ -801,6 +837,7 @@ public class CreateNewReminderActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     reminder.setCreatedby("user");
+                    reminder.setCreatedbyid(preferencesHelper.getUserId());
                     navigateToNextScreen();
                 }
             });
@@ -850,6 +887,10 @@ public class CreateNewReminderActivity extends Activity {
                     .addToBackStack(null)
                     .commit();
         }
+
+        private String currentFragment = fTAG_checkuser;
+
+
     }
 
     /**
@@ -1045,30 +1086,5 @@ public class CreateNewReminderActivity extends Activity {
             return repeatArrayDays;
         }
 
-    }
-
-    //Common Methods
-    private static boolean allComplete(boolean[] values) {
-        for (boolean value : values) {
-            if (!value)
-                return false;
-        }
-        return true;
-    }
-
-    private static void createToastWithText(String text, Activity activity) {
-        SuperToast superToast = new SuperToast(activity);
-        superToast.setDuration(SuperToast.Duration.SHORT);
-        superToast.setText(text);
-        superToast.setIcon(SuperToast.Icon.Dark.INFO, SuperToast.IconPosition.LEFT);
-        superToast.setGravity(Gravity.BOTTOM, 0, 50);
-        superToast.show();
-    }
-
-    private static DateTime calcNextDate(DateTime d, int day) {
-        if (d.getDayOfWeek() > day) {
-            d = d.plusWeeks(1);
-        }
-        return d.withDayOfWeek(day);
     }
 }

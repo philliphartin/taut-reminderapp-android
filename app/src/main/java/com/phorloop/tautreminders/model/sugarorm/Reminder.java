@@ -171,7 +171,7 @@ public class Reminder extends SugarRecord<Reminder> {
         ReminderGSON reminderGSON = new ReminderGSON(getId());
         Gson gson = new Gson();
         String json = gson.toJson(reminderGSON);
-        Log.d("Reminder", json);
+        Log.i("Reminder JSON: ", json);
     }
 
 }

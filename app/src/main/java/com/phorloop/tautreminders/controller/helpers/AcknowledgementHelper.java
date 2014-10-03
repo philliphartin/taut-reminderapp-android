@@ -44,6 +44,16 @@ public class AcknowledgementHelper {
         acknowledgement.save();
     }
 
+    public void updateAcknowledgementsAsSentToServer(List<Acknowledgement> acknowledgementList) {
+        //For each acknowledgement update as sent to server and save.
+        for (int i = 0; i < acknowledgementList.size(); i++) {
+            //get acknowledgement and convert to GSON.
+            Acknowledgement acknowledgement = acknowledgementList.get(i);
+            acknowledgement.setSenttoserver(1);
+            acknowledgement.save();
+        }
+    }
+
     public void logReminderAsMissed(Reminder reminder) {
         boolean acknowledged = false;
 
@@ -59,53 +69,39 @@ public class AcknowledgementHelper {
         acknowledgement.save();
     }
 
-//    public List getUnsentAcknowledgments() {
-//
-//        List<Acknowledgement> acknowledgements = Select.from(Acknowledgement.class).where("sentToServer = 0").orderBy("unixtime").list();
-//
-//        if (acknowledgements.isEmpty()) {
-//            return Collections.emptyList();
-//        } else {
-//            return acknowledgements;
-//        }
-//    }
 
-    public List<Acknowledgement> getUnsentAcknowledgments() {
+    public List<Acknowledgement> getListUnsentAcknowledgements() {
         List<Acknowledgement> list = Select.from(Acknowledgement.class)
                 .where(Condition.prop("senttoserver").eq(0)).list();
         return list;
     }
 
+    //Converts List Of basic Acknowledgement objects into an ArrayList of GSON Acknowledgement objects
+    private ArrayList getArrayListOfUnsentAcknowledgementsGSON(List<Acknowledgement> acknowledgementList) {
+        ArrayList<AcknowledgementGSON> acknowledgementGSONArray = new ArrayList<AcknowledgementGSON>();
 
-    public String getUnsentAcknowledgementsGSON() {
+        //For each acknowledgement convert to GSON model version
+        for (int i = 0; i < acknowledgementList.size(); i++) {
+            //get acknowledgement and convert to GSON.
+            Acknowledgement acknowledgement = acknowledgementList.get(i);
+            AcknowledgementGSON acknowledgementGSON = new AcknowledgementGSON(acknowledgement);
+            acknowledgementGSONArray.add(acknowledgementGSON); //Add to GSON array
+        }
+        return acknowledgementGSONArray;
+    }
+
+
+    public String getUnsentAcknowledgementsAsGSON(List<Acknowledgement> acknowledgementsList) {
         AcknowledgementArrayGSON acknowledgementArrayGSON = new AcknowledgementArrayGSON();
-        acknowledgementArrayGSON.setAcknowledgements(getArrayListOfUnsentAcknowledgementsGSON());
+        acknowledgementArrayGSON.setAcknowledgements(getArrayListOfUnsentAcknowledgementsGSON(acknowledgementsList));
 
         Gson gson = new Gson();
         String gsonToPost = gson.toJson(acknowledgementArrayGSON);
         return gsonToPost;
     }
 
-    private ArrayList getArrayListOfUnsentAcknowledgementsGSON() {
-
-        ArrayList<AcknowledgementGSON> acknowledgementGSONArray = new ArrayList<AcknowledgementGSON>();
-        List<Acknowledgement> acknowledgements = getUnsentAcknowledgments();
-
-        //For each acknowledgement convert to GSON model version
-        for (int i = 0; i < acknowledgements.size(); i++) {
-
-            //get acknowledgement and convert to GSON.
-            Acknowledgement acknowledgement = acknowledgements.get(i);
-            AcknowledgementGSON acknowledgementGSON = new AcknowledgementGSON(acknowledgement);
-            acknowledgementGSONArray.add(acknowledgementGSON); //Add to GSON array
-        }
-
-        return acknowledgementGSONArray;
-
-    }
-
     public boolean unSentAcknowledgementsAvailable() {
-        if (getUnsentAcknowledgments().isEmpty()) {
+        if (getListUnsentAcknowledgements().isEmpty()) {
             return false;
         } else {
             return true;
@@ -115,4 +111,5 @@ public class AcknowledgementHelper {
     private int convertBooleanToInt(Boolean bool) {
         return bool ? 1 : 0;
     }
+
 }

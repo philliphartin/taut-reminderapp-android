@@ -13,29 +13,28 @@ import com.phorloop.tautreminders.controller.helpers.PreferencesHelper;
  */
 public class RemoteDatabaseClient {
 
+    private static final String LOG = "RemoteDatabaseClient";
+    private static final String URLuploadLogs = "post_Acknowledgements.php";
+    private static AsyncHttpClient client = new AsyncHttpClient();
     private Context mContext;
-    private static String BASE_URL = null;
 
     public RemoteDatabaseClient(Context mContext) {
         this.mContext = mContext;
-        this.BASE_URL = getURL();
     }
 
-    private static final String LOG = "RemoteDatabaseClient";
-    private static final String URLuploadLogs = "frog_upload.php"; //FIXME: Change to real page log_upload.php
+    public void postAcknowledgementLogs(RequestParams params, AsyncHttpResponseHandler responseHandler) {
 
-    private static AsyncHttpClient client = new AsyncHttpClient();
+        String absoluteURL = getAbsoluteUrl(URLuploadLogs);
 
-    public static void postAcknowledgementLogs(RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.post(getAbsoluteUrl(URLuploadLogs), params, responseHandler);
-        Log.v(LOG, getAbsoluteUrl(URLuploadLogs));
+        Log.d(LOG, "Posting to: " + absoluteURL);
+        client.post(absoluteURL, params, responseHandler);
     }
 
-    private static String getAbsoluteUrl(String relativeUrl) {
-        return BASE_URL + relativeUrl;
+    private String getAbsoluteUrl(String relativeUrl) {
+        return getBaseURL() + relativeUrl;
     }
 
-    private String getURL() {
+    private String getBaseURL() {
         PreferencesHelper preferencesHelper = new PreferencesHelper(mContext);
         return preferencesHelper.getServerURL();
     }

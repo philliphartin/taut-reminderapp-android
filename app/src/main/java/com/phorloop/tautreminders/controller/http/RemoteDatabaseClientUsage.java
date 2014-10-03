@@ -7,9 +7,12 @@ import android.util.Log;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.phorloop.tautreminders.controller.helpers.AcknowledgementHelper;
+import com.phorloop.tautreminders.model.sugarorm.Acknowledgement;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by philliphartin on 18/04/2014.
@@ -17,25 +20,36 @@ import org.json.JSONObject;
 public class RemoteDatabaseClientUsage extends Application {
 
     private static final String LOG = "RemoteDatabaseClientUsage";
-    private Context context;
+    private Context mContext;
 
     public RemoteDatabaseClientUsage(Context context) {
-        this.context = context;
+        this.mContext = context;
     }
 
     public void postAcknowledgementLogs() {
 
-        AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper(context);
+        final AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper(mContext);
 
         if (acknowledgementHelper.unSentAcknowledgementsAvailable()) {
+            //Get List of Unsent Acknowledgements
+            final List<Acknowledgement> acknowledgementList = acknowledgementHelper.getListUnsentAcknowledgements();
+            //Then send list back to acknowledgement helper to have converted to GSON array
+            String JSONtoPost = acknowledgementHelper.getUnsentAcknowledgementsAsGSON(acknowledgementList);
 
             RequestParams params = new RequestParams();
-            params.put("acknowledgements", acknowledgementHelper.getUnsentAcknowledgementsGSON());
+            params.put("acknowledgementlog", JSONtoPost);
             Log.d(LOG, params.toString());
 
-            RemoteDatabaseClient.postAcknowledgementLogs(params, new JsonHttpResponseHandler() {
+            RemoteDatabaseClient remoteDatabaseClient = new RemoteDatabaseClient(mContext);
+            remoteDatabaseClient.postAcknowledgementLogs(params, new JsonHttpResponseHandler() {
 
-                @Override //FIXME: Check all this works
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    Log.d(LOG, "Failed");
+                }
+
+                @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
                     try {
@@ -43,6 +57,8 @@ public class RemoteDatabaseClientUsage extends Application {
                         String message = response.getString("message");
                         Log.d(LOG, "Success: " + success + " - " + message);
                         if (success == 1) {
+                            //On success, iterate through the acknowledgement list and set sent as 1.
+                            acknowledgementHelper.updateAcknowledgementsAsSentToServer(acknowledgementList);
                             //FIXME: Update the acknowledgements as sent
                         } else {
                             //Do Nothing
@@ -50,9 +66,11 @@ public class RemoteDatabaseClientUsage extends Application {
                     } catch (Exception e) {
                         Log.d(LOG, "postAnswers Exception: " + e);
                     }
-
                 }
             });
+
+        } else {
+            Log.d(LOG, "No Acknowledgement logs to send");
         }
     }
 
