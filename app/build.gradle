@@ -5,7 +5,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.phorloop.tautreminders"
+        applicationId "com.phorloop.tautreminderapp"
         minSdkVersion 15
         targetSdkVersion 20
         versionCode 1
@@ -13,7 +13,7 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("/Users/philliphartin/Dropbox/Development/keystore/phorloop.jks")
+            storeFile file("/Users/philliphartin/Dropbox/Development/Android/phorloopKeyStore.jks")
             storePassword "N33dl31nth3h@y"
             keyAlias "phorloop"
             keyPassword "Figure8"

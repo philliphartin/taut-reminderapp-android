@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Base App -->
-    <string name="app_name">TAUT Reminders App</string>
+    <string name="app_name">TAUT</string>
     <string name="title_activity_view_reminder">ViewRemindersActivity</string>
     <string name="title_activity_reminder_popup">ReminderPopUpActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
