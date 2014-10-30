@@ -30,7 +30,7 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Before we begin, we need to collect a few user from you. This will only happen once."
+            android:text="Before we begin, we need to collect a few user details from you. This will only happen once."
             android:textSize="18sp" />
 
         <TextView

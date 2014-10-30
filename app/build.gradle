@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+    buildToolsVersion "21.0.2"
 
     defaultConfig {
-        applicationId "com.phorloop.tautreminderapp"
+        applicationId "ulster.serg.tautreminderapp"
         minSdkVersion 15
         targetSdkVersion 20
         versionCode 1
@@ -37,5 +37,7 @@ dependencies {
     compile 'net.danlew:android.joda:2.4.0'
     compile 'com.google.code.gson:gson:1.7.2'
     compile files('libs/funf-v0.5.0RC1.jar')
+    compile files('libs/super-csv-2.2.0.jar')
     compile 'com.loopj.android:android-async-http:1.4.6'
+
 }

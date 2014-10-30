@@ -90,11 +90,11 @@
         android:key="sync_category"
         android:title="Sync Setup">
         <ListPreference
-            android:defaultValue="http://193.61.148.92/api/taut/scripts/"
+            android:defaultValue="legacy"
             android:entries="@array/serverNames"
             android:entryValues="@array/serverUrl"
             android:key="database"
-            android:summary="Define Which Server will upload to"
+            android:summary="Select which server to save data"
             android:title="Select Server"
         />
     </PreferenceCategory>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.phorloop.tautreminderapp">
+    package="ulster.serg.tautreminderapp">
 
 
     <!-- TAUT specific -->
@@ -26,7 +26,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
-        android:name="com.phorloop.tautreminderapp.controller.MyApplication"
+        android:name="ulster.serg.tautreminderapp.controller.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -42,10 +42,10 @@
             android:value="false" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.phorloop.tautreminderapp" />
+            android:value="ulster.serg.tautreminderapp" />
 
         <activity
-            android:name="com.phorloop.tautreminderapp.view.activity.HomeScreenActivity"
+            android:name="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,37 +53,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.phorloop.tautreminderapp.view.activity.CreateNewReminderActivity"
+            android:name="ulster.serg.tautreminderapp.view.activity.CreateNewReminderActivity"
             android:label="@string/title_activity_new_reminder"
-            android:parentActivityName="com.phorloop.tautreminderapp.view.activity.HomeScreenActivity">
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.phorloop.tautreminderapp.controller.activities.HomeSceenActivity" />
+                android:value="com.serg.tautreminderapp.controller.activities.HomeSceenActivity" />
         </activity>
         <activity
-            android:name="com.phorloop.tautreminderapp.view.activity.ViewRemindersListActivity"
+            android:name="ulster.serg.tautreminderapp.view.activity.ViewRemindersListActivity"
             android:label="@string/title_activity_view_reminder"
-            android:parentActivityName="com.phorloop.tautreminderapp.view.activity.HomeScreenActivity">
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.phorloop.tautreminderapp.controller.activities.HomeScreenActivity" />
+                android:value="ulster.serg.tautreminderapp.controller.activities.HomeScreenActivity" />
         </activity>
         <activity
-            android:name="com.phorloop.tautreminderapp.view.activity.PopUpActivity"
+            android:name="ulster.serg.tautreminderapp.view.activity.PopUpActivity"
             android:excludeFromRecents="true"
             android:label="@string/title_activity_reminder_popup"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog"></activity>
         <activity
-            android:name="com.phorloop.tautreminderapp.view.activity.SettingsActivity"
+            android:name="ulster.serg.tautreminderapp.view.activity.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.phorloop.tautreminderapp.view.activity.HomeScreenActivity"></activity>
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity"></activity>
 
         <!-- Register the Alarm Receiver -->
-        <receiver android:name="com.phorloop.tautreminderapp.controller.broadcastreciever.ReminderBroadcastReceiver" />
+        <receiver android:name="ulster.serg.tautreminderapp.controller.broadcastreceiver.ReminderBroadcastReceiver" />
         <!-- Register the OnBootChecker Receiver -->
         <receiver
-            android:name="com.phorloop.tautreminderapp.controller.broadcastreciever.OnBootChecker"
+            android:name="ulster.serg.tautreminderapp.controller.broadcastreceiver.OnBootChecker"
             android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="500">
