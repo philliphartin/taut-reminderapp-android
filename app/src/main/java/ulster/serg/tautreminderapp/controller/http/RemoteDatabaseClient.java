@@ -6,13 +6,14 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import ulster.serg.tautreminderapp.controller.helpers.PreferencesHelper;
 
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 
 import java.io.UnsupportedEncodingException;
+
+import ulster.serg.tautreminderapp.controller.helpers.PreferencesHelper;
 
 /**
  * Created by philliphartin on 17/04/2014.
@@ -27,7 +28,7 @@ public class RemoteDatabaseClient {
 
     private static final String URL_PROJECTPATH_MAIN = "/tautreminders/webresources/com.phorloop.tautreminders.reminderslog";
     private static final String URL_PROJECTPATH_DEV = "/tautreminders/webresources/com.phorloop.tautreminders.reminderslog";
-    private static final String URL_PROJECTPATH_LEGACY = "/taut/scripts";
+    private static final String URL_PROJECTPATH_LEGACY = "/api/taut/scripts";
 
     private static final String POST_ACKNOWLEDGEMENTS_MAIN = "/upload";
     private static final String POST_ACKNOWLEDGEMENTS_DEV = "/upload";
@@ -41,14 +42,14 @@ public class RemoteDatabaseClient {
         this.mContext = mContext;
     }
 
-    public void postAcknowledgementLogs(RequestParams params, AsyncHttpResponseHandler responseHandler) {
+    public void postAcknowledgementLogsLegacy(RequestParams params, AsyncHttpResponseHandler responseHandler) {
         String absoluteURL = getAbsoluteUrl();
         client.post(absoluteURL, params, responseHandler);
     }
 
 
     //Post method to send to RESTFUL Java server
-    public void postAcknowledegementLogsJSONtype(String json, AsyncHttpResponseHandler responseHandler){
+    public void postAcknowledegementLogsREST(String json, AsyncHttpResponseHandler responseHandler) {
 
         String absoluteURL = getAbsoluteUrl();
         Log.d(LOG, "Posting to: " + absoluteURL);
@@ -65,41 +66,53 @@ public class RemoteDatabaseClient {
         client.post(mContext, absoluteURL, entity, "application/json", responseHandler);
     }
 
+    public void postAcknowledgementLogs(String json, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+        PreferencesHelper preferencesHelper = new PreferencesHelper(mContext);
+        String selectedServer = preferencesHelper.getServerURL();
+
+        if (selectedServer.equals("legacy")) {
+            postAcknowledgementLogsLegacy(params, responseHandler);
+        } else {
+            postAcknowledegementLogsREST(json, responseHandler);
+        }
+    }
+
+
     private String getAbsoluteUrl() {
         PreferencesHelper preferencesHelper = new PreferencesHelper(mContext);
         String selectedServer = preferencesHelper.getServerURL();
         return getServerAddress(selectedServer) + getProjectPath(selectedServer) + getPostEndpoint(selectedServer);
     }
 
-    private String getServerAddress(String selectedServer){
-        if (selectedServer.equals("legacy")){
+    private String getServerAddress(String selectedServer) {
+        if (selectedServer.equals("legacy")) {
             return URL_SERVERIP_LEGACY;
-        }else{
+        } else {
             return URL_SERVERIP_MAIN;
         }
     }
 
     private String getPostEndpoint(String selectedServer) {
-        if (selectedServer.equals("main")){
+        if (selectedServer.equals("main")) {
             return POST_ACKNOWLEDGEMENTS_MAIN;
-        }else if (selectedServer.equals("legacy")){
+        } else if (selectedServer.equals("legacy")) {
             return POST_ACKNOWLEDGEMENTS_LEGACY;
-        }else if (selectedServer.equals("dev")){
+        } else if (selectedServer.equals("dev")) {
             return POST_ACKNOWLEDGEMENTS_DEV;
-        }else{
+        } else {
             //None of the above
             return POST_ACKNOWLEDGEMENTS_MAIN;
         }
     }
 
-    private String getProjectPath (String selectedServer) {
-        if (selectedServer.equals("main")){
+    private String getProjectPath(String selectedServer) {
+        if (selectedServer.equals("main")) {
             return URL_PROJECTPATH_MAIN;
-        }else if (selectedServer.equals("legacy")){
+        } else if (selectedServer.equals("legacy")) {
             return URL_PROJECTPATH_LEGACY;
-        }else if (selectedServer.equals("dev")){
+        } else if (selectedServer.equals("dev")) {
             return URL_PROJECTPATH_DEV;
-        }else{
+        } else {
             //None of the above
             return URL_PROJECTPATH_MAIN;
         }

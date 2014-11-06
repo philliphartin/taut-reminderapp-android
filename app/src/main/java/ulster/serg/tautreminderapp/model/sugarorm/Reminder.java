@@ -1,7 +1,6 @@
 package ulster.serg.tautreminderapp.model.sugarorm;
 
 import android.util.Log;
-
 import com.google.gson.Gson;
 import com.orm.SugarRecord;
 

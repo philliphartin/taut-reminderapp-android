@@ -24,6 +24,8 @@
     <!-- Wifi probe -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 
     <application
         android:name="ulster.serg.tautreminderapp.controller.MyApplication"
@@ -88,6 +90,13 @@
             android:exported="true">
             <intent-filter android:priority="500">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Receive Wi-Fi connection state changes -->
+        <receiver android:name=".controller.http.WifiReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
     </application>

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.orm.SugarRecord;
+
 import ulster.serg.tautreminderapp.model.gson.AcknowledgementGSON;
 
 /**
