@@ -76,9 +76,9 @@ public class HomeScreenActivity extends Activity {
         } else if (id == R.id.action_import) {
             DatabaseImporter importer = new DatabaseImporter(this);
             importer.execute("");
-        } else if (id == R.id.action_test) {
-            Intent intent_test = new Intent(this, TestActivity.class);
-            startActivity(intent_test);
+//        } else if (id == R.id.action_test) {
+//            Intent intent_test = new Intent(this, TestActivity.class);
+//            startActivity(intent_test);
     }
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ulster.serg.tautreminderapp" >
+    package="ulster.serg.tautreminderapp">
 
     <!-- TAUT specific -->
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -53,7 +53,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <meta-data
             android:name="DATABASE"
             android:value="tautreminders.db" />
@@ -69,7 +69,7 @@
 
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -79,7 +79,7 @@
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.CreateNewReminderActivity"
             android:label="@string/title_activity_new_reminder"
-            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity" >
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.serg.tautreminderapp.controller.activities.HomeSceenActivity" />
@@ -87,7 +87,7 @@
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.ViewRemindersListActivity"
             android:label="@string/title_activity_view_reminder"
-            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity" >
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ulster.serg.tautreminderapp.controller.activities.HomeScreenActivity" />
@@ -105,20 +105,20 @@
 
         <!-- Register the Alarm Receivers -->
         <receiver android:name="ulster.serg.tautreminderapp.controller.broadcastreceiver.ReminderBroadcastReceiver" />
-        <receiver android:name=".controller.sensors.alarms.SensorRecordingBroadcastReceiver" />
+        <receiver android:name=".controller.sensors.SensorRecordingBroadcastReceiver" />
 
         <!-- Register the OnBootChecker Receiver -->
         <receiver
             android:name="ulster.serg.tautreminderapp.controller.broadcastreceiver.OnBootChecker"
             android:enabled="true"
-            android:exported="true" >
-            <intent-filter android:priority="500" >
+            android:exported="true">
+            <intent-filter android:priority="500">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <!-- Receive Wi-Fi connection state changes -->
-        <receiver android:name="ulster.serg.tautreminderapp.controller.http.WifiReceiver" >
+        <receiver android:name="ulster.serg.tautreminderapp.controller.http.WifiReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
@@ -126,8 +126,21 @@
 
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.TestActivity"
-            android:label="@string/title_activity_test" >
-        </activity>
+            android:label="@string/title_activity_test"></activity>
+
+        <service
+            android:name=".controller.sensors.legacy.services.ServiceSensorRecordingWindow"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".controller.sensors.legacy.services.ServiceEmbeddedSensorLogger"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".controller.sensors.legacy.sensor.location.GpsLoggingService"
+            android:enabled="true"
+            android:exported="true" />
+
     </application>
 
 </manifest>

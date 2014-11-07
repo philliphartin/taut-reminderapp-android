@@ -57,7 +57,6 @@ public class RemoteDatabaseClientUsage extends Application {
                         String message = response.getString("message");
                         Log.w(LOG, "Success: " + success);
                         if (success == 1) {
-                            //FIXME: Update this!
                             Log.i(LOG, message);
                             //On success, iterate through the acknowledgement list and set sent as 1.
                             acknowledgementHelper.updateAcknowledgementsAsSentToServer(acknowledgementList);

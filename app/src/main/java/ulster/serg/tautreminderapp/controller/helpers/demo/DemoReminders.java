@@ -1,4 +1,4 @@
-package ulster.serg.tautreminderapp.controller.demo;
+package ulster.serg.tautreminderapp.controller.helpers.demo;
 
 import android.content.Context;
 import android.util.Log;

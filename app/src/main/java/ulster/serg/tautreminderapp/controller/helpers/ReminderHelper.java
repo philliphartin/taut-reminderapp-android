@@ -9,7 +9,7 @@ import com.orm.query.Select;
 import java.util.Collections;
 import java.util.List;
 
-import ulster.serg.tautreminderapp.controller.sensors.alarms.SensorRecordingHelper;
+import ulster.serg.tautreminderapp.controller.sensors.SensorRecordingHelper;
 import ulster.serg.tautreminderapp.model.sugarorm.Reminder;
 
 /**
@@ -100,6 +100,20 @@ public class ReminderHelper {
                 .where(Condition.prop("unixtime").lt(unixTimeNow), // Time is in the past
                         (Condition.prop("active").eq(1))).list(); // Is still active
         return reminderList;
+    }
+
+    public Reminder getReminderFromId(int reminderID) {
+        List<Reminder> reminders = Select.from(Reminder.class).where(Condition.prop("id").eq(reminderID)).limit("1").list();
+        if (reminders.isEmpty()) {
+            return null;
+        } else {
+            return reminders.get(0);
+        }
+    }
+
+    public long getReminderUnixTimeFromId(int reminderID) {
+        Reminder reminder = getReminderFromId(reminderID);
+        return reminder.getUnixtime();
     }
 
 

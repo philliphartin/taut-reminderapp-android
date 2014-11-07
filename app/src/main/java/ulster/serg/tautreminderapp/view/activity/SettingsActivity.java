@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import ulster.serg.tautreminderapp.controller.demo.DemoReminders;
+import ulster.serg.tautreminderapp.controller.helpers.demo.DemoReminders;
 import ulster.serg.tautreminderapp.controller.helpers.PreferencesHelper;
 
 /**

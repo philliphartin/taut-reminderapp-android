@@ -1,4 +1,4 @@
-package ulster.serg.tautreminderapp.controller.sensors.alarms;
+package ulster.serg.tautreminderapp.controller.sensors;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -18,9 +18,8 @@ import ulster.serg.tautreminderapp.model.sugarorm.Reminder;
 public class SensorRecordingHelper {
 
     private static final String LOG = "SensorRecordingHelper";
-    final private int preReminderRecordingWindow = 3; // Number of minutes to record prior to reminder
-    final private int postReminderRecordingWindow = 3; // Number of minutes to record after the reminder
-    final private int reminderRecordingWindowTotal = preReminderRecordingWindow + postReminderRecordingWindow;
+    final private int preReminderRecordingWindow = 1; // Number of minutes to record prior to reminder
+    final private int postReminderRecordingWindow = 1; // Number of minutes to record after the reminder
     private Context mContext;
 
     public SensorRecordingHelper(Context mContext) {
@@ -32,7 +31,7 @@ public class SensorRecordingHelper {
         long unixTimeReminder = reminder.getUnixtime(); // Get time of reminder
         DateTime dateTime = new DateTime(unixTimeReminder); // subtract preRecording Window length
         long unixTimeRecordingStart = (dateTime.minusMinutes(preReminderRecordingWindow)).getMillis(); //Convert to Millis
-        long recordingDurationInMillis = unixTimeRecordingStart + (reminderRecordingWindowTotal * 1000L);
+        //long reminderRecordingWindowTotal = unixTimeRecordingStart + (reminderRecordingWindowTotal * 1000L);
         DateHelper dateHelper = new DateHelper();
         String reminderDate = dateHelper.getDateSaveReadableFromDateTime(dateTime);
         String reminderTime = dateHelper.getTimeSaveReadableFromDateTime(dateTime);
@@ -44,10 +43,9 @@ public class SensorRecordingHelper {
         Bundle bundle = new Bundle();
         bundle.putString("reminderIdentifier", reminderIdentifier);
         bundle.putLong("recordingStartTime", unixTimeRecordingStart);
-        bundle.putLong("recordingDurationInMs", recordingDurationInMillis);
+        bundle.putLong("reminderRecordingWindowTotal", getReminderRecordingWindowTotalInMillis());
         bundle.putString("reminderDate", reminderDate);
         bundle.putString("reminderTime", reminderTime);
-
 
         Intent intent = new Intent(mContext, SensorRecordingBroadcastReceiver.class);
         intent.putExtras(bundle);
@@ -56,7 +54,6 @@ public class SensorRecordingHelper {
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, reminderId, intent, PendingIntent.FLAG_UPDATE_CURRENT); //Pending intent (context, requestCode: same as reminderId, intent, flags)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, unixTimeRecordingStart, pendingIntent);
-
         Log.d(LOG, "Recording for reminder " + reminderId + " scheduled for " + dateHelper.getTimeHumanReadableFromUnixTime(unixTimeRecordingStart) + " on " + dateHelper.getDateHumanReadableFromUnixTime(unixTimeRecordingStart));
     }
 
@@ -65,10 +62,14 @@ public class SensorRecordingHelper {
         Intent cancelServiceIntent = new Intent(mContext, SensorRecordingBroadcastReceiver.class);
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         PendingIntent cancelIntent = PendingIntent.getBroadcast(mContext, (int) reminderId, cancelServiceIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        DateHelper dateHelper = new DateHelper();
         Log.d(LOG, "Recording for reminder " + reminderId + " has been unscheduled");
         alarmManager.cancel(cancelIntent);
+    }
+
+    private long getReminderRecordingWindowTotalInMillis() {
+        final long oneMinuteMs = 60000L;
+        long preWindowMs = preReminderRecordingWindow * oneMinuteMs;
+        long postRecordingMs = postReminderRecordingWindow * oneMinuteMs;
+        return preWindowMs + postRecordingMs;
     }
 }
