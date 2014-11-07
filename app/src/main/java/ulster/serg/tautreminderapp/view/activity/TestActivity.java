@@ -3,7 +3,6 @@ package ulster.serg.tautreminderapp.view.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,17 +60,13 @@ public class TestActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void senseOnceAndStop()
-    {
-        try
-        {
+    private void senseOnceAndStop() {
+        try {
             ESSensorManager sensorManager = ESSensorManager.getSensorManager(this);
             sensorManager.getDataFromSensor(sensorType);
             Log.d(LOG, "Sensed from: " + SensorUtils.getSensorName(sensorType));
 
-        }
-        catch (ESException e)
-        {
+        } catch (ESException e) {
             e.printStackTrace();
         }
     }

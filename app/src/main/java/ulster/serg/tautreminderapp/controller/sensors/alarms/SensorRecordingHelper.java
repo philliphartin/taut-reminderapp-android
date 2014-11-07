@@ -33,6 +33,9 @@ public class SensorRecordingHelper {
         DateTime dateTime = new DateTime(unixTimeReminder); // subtract preRecording Window length
         long unixTimeRecordingStart = (dateTime.minusMinutes(preReminderRecordingWindow)).getMillis(); //Convert to Millis
         long recordingDurationInMillis = unixTimeRecordingStart + (reminderRecordingWindowTotal * 1000L);
+        DateHelper dateHelper = new DateHelper();
+        String reminderDate = dateHelper.getDateSaveReadableFromDateTime(dateTime);
+        String reminderTime = dateHelper.getTimeSaveReadableFromDateTime(dateTime);
 
         int reminderId = (int) (long) reminder.getId(); // Get reminderID
         String reminderIdentifier = String.valueOf(reminderId); // Package reminderID as string for bundle
@@ -42,6 +45,9 @@ public class SensorRecordingHelper {
         bundle.putString("reminderIdentifier", reminderIdentifier);
         bundle.putLong("recordingStartTime", unixTimeRecordingStart);
         bundle.putLong("recordingDurationInMs", recordingDurationInMillis);
+        bundle.putString("reminderDate", reminderDate);
+        bundle.putString("reminderTime", reminderTime);
+
 
         Intent intent = new Intent(mContext, SensorRecordingBroadcastReceiver.class);
         intent.putExtras(bundle);
@@ -51,7 +57,6 @@ public class SensorRecordingHelper {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, reminderId, intent, PendingIntent.FLAG_UPDATE_CURRENT); //Pending intent (context, requestCode: same as reminderId, intent, flags)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, unixTimeRecordingStart, pendingIntent);
 
-        DateHelper dateHelper = new DateHelper();
         Log.d(LOG, "Recording for reminder " + reminderId + " scheduled for " + dateHelper.getTimeHumanReadableFromUnixTime(unixTimeRecordingStart) + " on " + dateHelper.getDateHumanReadableFromUnixTime(unixTimeRecordingStart));
     }
 
