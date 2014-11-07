@@ -18,8 +18,8 @@ import ulster.serg.tautreminderapp.model.sugarorm.Reminder;
 public class SensorRecordingHelper {
 
     private static final String LOG = "SensorRecordingHelper";
-    final private int preReminderRecordingWindow = 1; // Number of minutes to record prior to reminder
-    final private int postReminderRecordingWindow = 1; // Number of minutes to record after the reminder
+    final private int preReminderRecordingWindow = 2; // Number of minutes to record prior to reminder
+    final private int postReminderRecordingWindow = 2; // Number of minutes to record after the reminder
     private Context mContext;
 
     public SensorRecordingHelper(Context mContext) {
