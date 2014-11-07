@@ -1,38 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ulster.serg.tautreminderapp">
-
+    package="ulster.serg.tautreminderapp" >
 
     <!-- TAUT specific -->
-    <!-- - - - - - - - -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- Funf specific -->
-    <!-- - - - - - - - -->
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- Location probe -->
+
+    <!--
+    Copyright (c) 2012, University of Cambridge
+    This library was developed as part of the EPSRC Ubhave
+    (Ubiquitous and Social Computing for Positive Behaviour Change) Project
+    -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- Wifi probe -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BATTERY_STATS" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- <uses-permission android:name="android.permission.UPDATE_DEVICE_STATS" /> -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.sensor.gyroscope"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name="ulster.serg.tautreminderapp.controller.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <meta-data
             android:name="DATABASE"
             android:value="tautreminders.db" />
@@ -48,16 +69,17 @@
 
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.CreateNewReminderActivity"
             android:label="@string/title_activity_new_reminder"
-            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity">
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.serg.tautreminderapp.controller.activities.HomeSceenActivity" />
@@ -65,7 +87,7 @@
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.ViewRemindersListActivity"
             android:label="@string/title_activity_view_reminder"
-            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity">
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ulster.serg.tautreminderapp.controller.activities.HomeScreenActivity" />
@@ -75,29 +97,37 @@
             android:excludeFromRecents="true"
             android:label="@string/title_activity_reminder_popup"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Dialog"></activity>
+            android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity"></activity>
+            android:parentActivityName="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity" />
 
-        <!-- Register the Alarm Receiver -->
+        <!-- Register the Alarm Receivers -->
         <receiver android:name="ulster.serg.tautreminderapp.controller.broadcastreceiver.ReminderBroadcastReceiver" />
+        <receiver android:name=".controller.sensors.alarms.SensorRecordingBroadcastReceiver" />
+
         <!-- Register the OnBootChecker Receiver -->
         <receiver
             android:name="ulster.serg.tautreminderapp.controller.broadcastreceiver.OnBootChecker"
             android:enabled="true"
-            android:exported="true">
-            <intent-filter android:priority="500">
+            android:exported="true" >
+            <intent-filter android:priority="500" >
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <!-- Receive Wi-Fi connection state changes -->
-        <receiver android:name=".controller.http.WifiReceiver">
+        <receiver android:name="ulster.serg.tautreminderapp.controller.http.WifiReceiver" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="ulster.serg.tautreminderapp.view.activity.TestActivity"
+            android:label="@string/title_activity_test" >
+        </activity>
     </application>
+
 </manifest>

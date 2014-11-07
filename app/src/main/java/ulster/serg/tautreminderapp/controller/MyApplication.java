@@ -1,6 +1,7 @@
 package ulster.serg.tautreminderapp.controller;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
@@ -17,8 +18,16 @@ import java.util.HashMap;
 
 public class MyApplication extends SugarApp {
 
-    //MixPanel Analytics
-    HashMap<TrackerName, MixpanelAPI> mMixpanels = new HashMap<TrackerName, MixpanelAPI>();
+    private static MyApplication instance;
+    HashMap<TrackerName, MixpanelAPI> mMixpanels = new HashMap<TrackerName, MixpanelAPI>();     //MixPanel Analytics
+
+    public MyApplication() {
+        instance = this;
+    }
+
+    public static Context getContext() {
+        return instance;
+    }
 
     //Google Analytics Hashmap
     //HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();

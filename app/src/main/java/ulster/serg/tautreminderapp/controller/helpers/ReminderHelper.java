@@ -9,6 +9,7 @@ import com.orm.query.Select;
 import java.util.Collections;
 import java.util.List;
 
+import ulster.serg.tautreminderapp.controller.sensors.alarms.SensorRecordingHelper;
 import ulster.serg.tautreminderapp.model.sugarorm.Reminder;
 
 /**
@@ -58,6 +59,9 @@ public class ReminderHelper {
 
         ScheduleHelper scheduleHelper = new ScheduleHelper(mContext);
         scheduleHelper.unScheduleReminder(reminder.getId());
+
+        SensorRecordingHelper sensorRecordingHelper = new SensorRecordingHelper(mContext);
+        sensorRecordingHelper.unScheduleRecording(reminder.getId());
     }
 
     public void deleteReminderWithId(long id) {
@@ -72,6 +76,9 @@ public class ReminderHelper {
 
         ScheduleHelper scheduleHelper = new ScheduleHelper(mContext);
         scheduleHelper.scheduleReminder(reminder);
+
+        SensorRecordingHelper sensorRecordingHelper = new SensorRecordingHelper(mContext);
+        sensorRecordingHelper.scheduleRecording(reminder);
     }
 
     public void processRepeatReminder(Reminder reminder) {
