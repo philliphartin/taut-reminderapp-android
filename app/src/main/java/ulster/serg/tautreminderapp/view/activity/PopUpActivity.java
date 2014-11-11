@@ -21,16 +21,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import ulster.serg.tautreminderapp.controller.helpers.AcknowledgementHelper;
-import ulster.serg.tautreminderapp.controller.helpers.ReminderHelper;
-import ulster.serg.tautreminderapp.controller.helpers.ScheduleHelper;
-import ulster.serg.tautreminderapp.model.sugarorm.Acknowledgement;
-import ulster.serg.tautreminderapp.model.sugarorm.Reminder;
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import ulster.serg.tautreminderapp.controller.helpers.AcknowledgementHelper;
+import ulster.serg.tautreminderapp.controller.helpers.AnalyticsHelper;
+import ulster.serg.tautreminderapp.controller.helpers.ReminderHelper;
+import ulster.serg.tautreminderapp.controller.helpers.ScheduleHelper;
+import ulster.serg.tautreminderapp.model.sugarorm.Acknowledgement;
+import ulster.serg.tautreminderapp.model.sugarorm.Reminder;
 
 /**
  * Created by Phillip J Hartin on 20/10/13.
@@ -39,8 +40,8 @@ import java.util.TimerTask;
 public class PopUpActivity extends Activity {
     private final static String LOG = "PopUpActivity";
     //Screen delay before auto closing
-
     private final int delayTime = 60000;   //6ti0secs
+    private AnalyticsHelper analytics;
     //Statistics to log
     private long timeToAcknowledge;
     //Components
@@ -97,6 +98,9 @@ public class PopUpActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        analytics = new AnalyticsHelper(this);
+        analytics.track_screenView("ReminderPopUp");
 
         //Record time that popup delivered
         setUnixTimePopUpDelivered(getCurrentUnixTime());
@@ -366,6 +370,9 @@ public class PopUpActivity extends Activity {
         super.onDestroy();
 
         stopSoundVibrationVoice();
+
+        //Analytics
+        analytics.track_PopUpAcknowledged(userInteraction, getTimeToAcknowledge());
 
         //Log Acknowledgement
         AcknowledgementHelper acknowledgementHelper = new AcknowledgementHelper(this);

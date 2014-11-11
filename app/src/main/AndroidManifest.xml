@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- Funf specific -->
-    <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!--
@@ -29,9 +28,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <!-- <uses-permission android:name="android.permission.UPDATE_DEVICE_STATS" /> -->
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -66,6 +64,9 @@
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="ulster.serg.tautreminderapp" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name="ulster.serg.tautreminderapp.view.activity.HomeScreenActivity"

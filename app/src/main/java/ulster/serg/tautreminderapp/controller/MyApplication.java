@@ -5,12 +5,16 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.orm.SugarApp;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.util.HashMap;
+
+import ulster.serg.tautreminderapp.R;
 
 /**
  * Created by philliphartin on 16/09/2014.
@@ -19,7 +23,10 @@ import java.util.HashMap;
 public class MyApplication extends SugarApp {
 
     private static MyApplication instance;
+
+    //Analytics Trackers
     HashMap<TrackerName, MixpanelAPI> mMixpanels = new HashMap<TrackerName, MixpanelAPI>();     //MixPanel Analytics
+    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();     //Google Analytics Hashmap
 
     public MyApplication() {
         instance = this;
@@ -28,9 +35,6 @@ public class MyApplication extends SugarApp {
     public static Context getContext() {
         return instance;
     }
-
-    //Google Analytics Hashmap
-    //HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
 
     @Override
     public void onCreate() {
@@ -84,7 +88,7 @@ public class MyApplication extends SugarApp {
     }
 
 
-    //Mix Analytics
+    //MixPanel Analytics
     public synchronized MixpanelAPI getMixPanelAnalyticsTracker(TrackerName trackerName) {
         if (!mMixpanels.containsKey(trackerName)) {
 
@@ -92,23 +96,24 @@ public class MyApplication extends SugarApp {
             String token = getString(ulster.serg.tautreminderapp.R.string.MIXPANEL_TOKEN_DEV);
             MixpanelAPI mMixpanel = MixpanelAPI.getInstance(this, token);
             mMixpanels.put(trackerName, mMixpanel);
+            mMixpanel.logPosts();
         }
         return mMixpanels.get(trackerName);
     }
 
 
-//    //Google Analytics
-//    public synchronized Tracker getGoogleAnalyticsTracker(TrackerName trackerId) {
-//        if (!mTrackers.containsKey(trackerId)) {
-//
-//            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-//            //analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
-//
-//            Tracker t = analytics.newTracker(R.xml.global_tracker);
-//            mTrackers.put(trackerId, t);
-//        }
-//        return mTrackers.get(trackerId);
-//    }
+    //Google Analytics
+    public synchronized Tracker getGoogleAnalyticsTracker(TrackerName trackerId) {
+        if (!mTrackers.containsKey(trackerId)) {
+
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            //analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
+
+            Tracker t = analytics.newTracker(R.xml.global_tracker);
+            mTrackers.put(trackerId, t);
+        }
+        return mTrackers.get(trackerId);
+    }
 
     public enum TrackerName {
         APP_TRACKER // Tracker used only in this app.

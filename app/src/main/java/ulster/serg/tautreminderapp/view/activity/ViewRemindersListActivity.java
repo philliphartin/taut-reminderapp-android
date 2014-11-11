@@ -15,13 +15,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ulster.serg.tautreminderapp.controller.helpers.AnalyticsHelper;
 import ulster.serg.tautreminderapp.controller.helpers.ReminderHelper;
 import ulster.serg.tautreminderapp.controller.listviewadapter.ListAdapterForReminders;
 import ulster.serg.tautreminderapp.controller.listviewadapter.ListItem;
 import ulster.serg.tautreminderapp.model.sugarorm.Reminder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Phillip J Hartin on 21/10/13.
@@ -61,9 +62,10 @@ public class ViewRemindersListActivity extends Activity {
             mActionMode = null;
         }
     };
-    ListView listView;
-    ListAdapterForReminders listAdapter;
-    ArrayList activeRemindersList;
+    private ListView listView;
+    private ListAdapterForReminders listAdapter;
+    private ArrayList activeRemindersList;
+    private AnalyticsHelper analytics;
     private Context context = this;
     private Toast mToast;
 
@@ -71,6 +73,9 @@ public class ViewRemindersListActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(ulster.serg.tautreminderapp.R.layout.activity_reminder_list);
+
+        analytics = new AnalyticsHelper(this);
+        analytics.track_screenView("View Reminders");
 
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
@@ -158,25 +163,11 @@ public class ViewRemindersListActivity extends Activity {
 
     private void removeAndUnscheduleReminder(long reminderId) {
         ReminderHelper reminderHelper = new ReminderHelper(context);
-        //ScheduleHelper scheduleHelper = new ScheduleHelper(context);
-        reminderHelper.softDeleteReminderWithId(reminderId);
-        //scheduleHelper.unScheduleReminder(reminderId);
-    }
+        String reminderType = reminderHelper.getReminderTypeFromId((int) reminderId);
+        analytics.track_deleteReminder(reminderType);
 
-    //TODO: Tracker code
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // The rest of your onStart() code.
-//        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        // The rest of your onStop() code.
-//        EasyTracker.getInstance(this).activityStop(this);  // Add this method.
-//    }
+        reminderHelper.softDeleteReminderWithId(reminderId);
+    }
 
     @Override
     public void onDestroy() {

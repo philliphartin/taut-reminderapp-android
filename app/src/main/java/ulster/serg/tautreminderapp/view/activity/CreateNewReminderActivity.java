@@ -35,6 +35,7 @@ import android.widget.TimePicker;
 
 import com.github.johnpersano.supertoasts.SuperToast;
 
+import ulster.serg.tautreminderapp.controller.helpers.AnalyticsHelper;
 import ulster.serg.tautreminderapp.controller.helpers.DateHelper;
 import ulster.serg.tautreminderapp.controller.helpers.PreferencesHelper;
 import ulster.serg.tautreminderapp.controller.helpers.ReminderHelper;
@@ -56,6 +57,9 @@ import java.util.Map;
 
 public class CreateNewReminderActivity extends Activity {
     private static final String LOGa = "CreateNewReminderActivity";
+
+    //Analytics
+    AnalyticsHelper analytics;
 
     //FragmentTags
     private final static String fTAG_adltype = "fTAG_adltype";
@@ -113,6 +117,7 @@ public class CreateNewReminderActivity extends Activity {
                     .commit();
         }
 
+
         ActionBar actionBar = getActionBar();
         actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         actionBar.setDisplayShowHomeEnabled(false);
@@ -123,9 +128,26 @@ public class CreateNewReminderActivity extends Activity {
      * Fragment to choose reminder format
      */
     public static class FormatChoiceFragment extends Fragment {
-        private static final String LOGf = "FormatChoiceFragment";
+        private static final String LOGf = "FormatChoice";
+
+
 
         public FormatChoiceFragment() {
+        }
+
+        private AnalyticsHelper analytics;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Init Analytics
+            analytics = new AnalyticsHelper(getActivity());
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            analytics.track_screenView(LOGf);
         }
 
         @Override
@@ -167,7 +189,7 @@ public class CreateNewReminderActivity extends Activity {
      * Fragment to record voice
      */
     public static class RecordVoiceFragment extends Fragment {
-        private static final String LOGf = "RecordVoiceFragment";
+        private static final String LOGf = "RecordVoice";
         //Method Specific items
         private static final String LOG = "New Reminder Audio";
         private static final String AUDIO_RECORDER_FOLDER = "TAUT/VoiceReminders";
@@ -191,6 +213,21 @@ public class CreateNewReminderActivity extends Activity {
         };
 
         public RecordVoiceFragment() {
+        }
+
+        private AnalyticsHelper analytics;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Init Analytics
+            analytics = new AnalyticsHelper(getActivity());
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            analytics.track_screenView(LOGf);
         }
 
         @Override
@@ -371,7 +408,7 @@ public class CreateNewReminderActivity extends Activity {
      */
 
     public static class PickDateFragment extends Fragment {
-        private static final String LOGf = "PickDateFragment";
+        private static final String LOGf = "PickDate";
         //DATEPICKER
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -415,6 +452,21 @@ public class CreateNewReminderActivity extends Activity {
         private Boolean timeChosen = false;
         private Boolean dateChosen = false;
         private String currentFragment = fTAG_pickdate;
+
+        private AnalyticsHelper analytics;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Init Analytics
+            analytics = new AnalyticsHelper(getActivity());
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            analytics.track_screenView(LOGf);
+        }
 
         public PickDateFragment() {
         }
@@ -525,10 +577,25 @@ public class CreateNewReminderActivity extends Activity {
      * Fragment to set reminder ADL types
      */
     public static class ADLTypeFragment extends Fragment {
-        private static final String LOGf = "ADLTypeFragment";
+        private static final String LOGf = "ADLType";
         //UI elements
         Spinner spinnerADLType;
         EditText editTextDescription;
+
+        private AnalyticsHelper analytics;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Init Analytics
+            analytics = new AnalyticsHelper(getActivity());
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            analytics.track_screenView(LOGf);
+        }
 
         //Method Specific items
         public ADLTypeFragment() {
@@ -580,15 +647,13 @@ public class CreateNewReminderActivity extends Activity {
         }
 
         private String currentFragment = fTAG_adltype;
-
-
     }
 
     /**
      * Fragment to set reminder ADL types
      */
     public static class RepeatFrequencyFragment extends Fragment {
-        private static final String LOGf = "RepeatFrequencyFragment";
+        private static final String LOGf = "RepeatFrequency";
         //UI elements
         LinearLayout layout_customOptions;
         RadioGroup radioGroup;
@@ -601,6 +666,21 @@ public class CreateNewReminderActivity extends Activity {
         private Boolean repeatFrequencyChosen = false;
         private String currentFragment = fTAG_repeatfrequency;
         private Boolean customrepeatFrequencyChosen = false; //Set to true if normal chosen
+
+        private AnalyticsHelper analytics;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Init Analytics
+            analytics = new AnalyticsHelper(getActivity());
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            analytics.track_screenView(LOGf);
+        }
 
         public RepeatFrequencyFragment() {
         }
@@ -816,7 +896,21 @@ public class CreateNewReminderActivity extends Activity {
      * Fragment to check user type
      */
     public static class UserCheckFragment extends Fragment {
-        private static final String LOGf = "UserCheckFragment";
+        private static final String LOGf = "UserCheck";
+        private AnalyticsHelper analytics;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Init Analytics
+            analytics = new AnalyticsHelper(getActivity());
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            analytics.track_screenView(LOGf);
+        }
 
         public UserCheckFragment() {
         }
@@ -897,12 +991,25 @@ public class CreateNewReminderActivity extends Activity {
      * Fragment to confirm details
      */
     public static class ConfirmDetailsFragment extends Fragment {
-        private static final String LOGf = "ConfirmDetailsFragment";
+        private static final String LOGf = "ConfirmDetails";
         private static Context context;
-
         //UI elements
         LinearLayout customDaysLayout;
         TextView customDaysText;
+        private AnalyticsHelper analytics;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Init Analytics
+            analytics = new AnalyticsHelper(getActivity());
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            analytics.track_screenView(LOGf);
+        }
 
         public ConfirmDetailsFragment() {
         }
@@ -1024,6 +1131,9 @@ public class CreateNewReminderActivity extends Activity {
                 //Save Reminder
                 ReminderHelper reminderHelper = new ReminderHelper(context);
                 reminderHelper.saveNewReminder(reminder);
+
+                //Analytics
+                analytics.track_saveReminder(reminder);
             }
         }
 
@@ -1060,6 +1170,8 @@ public class CreateNewReminderActivity extends Activity {
                     DateTimeFormatter fmt_date = DateTimeFormat.forPattern("MM-dd-yyyy");
                     String new_date = fmt_date.print(newTime);
 
+
+
                     //Set reminder object details
                     reminder.setRepeatfreq("Weekly");
                     reminder.setDayofweek(dayasText);
@@ -1068,6 +1180,9 @@ public class CreateNewReminderActivity extends Activity {
                     reminder.setActive(1);
                     //Save Reminder
                     reminderHelper.saveNewReminder(reminder);
+
+                    //Analytics
+                    analytics.track_saveReminder(reminder);
                 }
             }
         }

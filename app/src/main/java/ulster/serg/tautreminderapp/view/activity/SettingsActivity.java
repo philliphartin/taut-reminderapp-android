@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import ulster.serg.tautreminderapp.controller.helpers.AnalyticsHelper;
 import ulster.serg.tautreminderapp.controller.helpers.demo.DemoReminders;
 import ulster.serg.tautreminderapp.controller.helpers.PreferencesHelper;
 
@@ -24,6 +25,8 @@ public class SettingsActivity extends Activity {
     private static final String LOGa = "SettingsActivity";
     private static SettingsFragment settingsFragment;
     private static SharedPreferences sharedPreferences;
+    private AnalyticsHelper analytics;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,9 @@ public class SettingsActivity extends Activity {
         actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setTitle("Settings");
+
+        analytics = new AnalyticsHelper(this);
+        analytics.track_screenView("Settings");
     }
 
     @Override

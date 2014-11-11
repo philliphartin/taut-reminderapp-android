@@ -116,21 +116,8 @@ public class ReminderHelper {
         return reminder.getUnixtime();
     }
 
-
-//    public boolean isRepeatReminder(Reminder reminder) {
-//        if (reminder.getRepeatfreq().contains("Never")) {
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-
-    //    private void removeAudioFileIfApplicable(Reminder reminder) {
-//        if (isVoiceReminder(reminder)) {
-//            if (!isRepeatReminder(reminder)) {
-//                FileHelper fileHelper = new FileHelper();
-//                fileHelper.deleteAudioFileForReminder(reminder);
-//            }
-//        }
-//    }
+    public String getReminderTypeFromId(int reminderID){
+        Reminder reminder = getReminderFromId(reminderID);
+        return reminder.getType();
+    }
 }

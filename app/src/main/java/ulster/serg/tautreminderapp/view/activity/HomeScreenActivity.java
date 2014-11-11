@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import ulster.serg.tautreminderapp.R;
+import ulster.serg.tautreminderapp.controller.helpers.AnalyticsHelper;
 import ulster.serg.tautreminderapp.controller.helpers.DatabaseImporter;
 import ulster.serg.tautreminderapp.controller.helpers.DateHelper;
 import ulster.serg.tautreminderapp.controller.helpers.PreferencesHelper;
@@ -28,6 +29,7 @@ import ulster.serg.tautreminderapp.view.dialog.WelcomeDialog;
 public class HomeScreenActivity extends Activity {
 
     private static final String LOGa = "HomeScreenActivity";
+    private AnalyticsHelper analytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +41,24 @@ public class HomeScreenActivity extends Activity {
                     .commit();
         }
 
+        //Initialise Analytics
+        analytics = new AnalyticsHelper(this);
+
+        //Setup UI
         ActionBar actionBar = getActionBar();
         actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setTitle("TAUT Reminders App");
 
-        //Check if the app has been setup
+        //Check if the app has been setup with user details
         PreferencesHelper preferencesHelper = new PreferencesHelper(this);
         boolean initialised = preferencesHelper.getInitialised();
 
         if (!initialised) {
             WelcomeDialog welcomeDialog = new WelcomeDialog(this);
             welcomeDialog.show();
+        } else {
+            analytics.setupTrackerDetails();
         }
     }
 
@@ -79,7 +87,7 @@ public class HomeScreenActivity extends Activity {
 //        } else if (id == R.id.action_test) {
 //            Intent intent_test = new Intent(this, TestActivity.class);
 //            startActivity(intent_test);
-    }
+        }
 
 
         return super.onOptionsItemSelected(item);
@@ -108,6 +116,18 @@ public class HomeScreenActivity extends Activity {
                 });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        analytics.track_appLaunched();
+    }
+
+    @Override
+    protected void onDestroy() {
+        analytics.flush();
+        super.onDestroy();
     }
 
     /**
@@ -160,6 +180,4 @@ public class HomeScreenActivity extends Activity {
             return dateHelper.getDateHumanReadableFromUnixTime(dateHelper.getUnixTimeNow());
         }
     }
-
-
 }

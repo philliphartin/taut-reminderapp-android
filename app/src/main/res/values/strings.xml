@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Tracking Data -->
+    <string name="MIXPANEL_TOKEN_LIVE"></string>
+    <string name="MIXPANEL_TOKEN_DEV">397f0ee34a7e7ec026aa98d7ee7ea0e7</string>
+
     <!-- Base App -->
     <string name="app_name">TAUT</string>
+    <string name="title_activity_summary">SummaryActivity</string>
+    <string name="title_activity_new_reminder">NewReminderActivity</string>
     <string name="title_activity_view_reminder">ViewRemindersActivity</string>
     <string name="title_activity_reminder_popup">ReminderPopUpActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
@@ -27,13 +33,6 @@
     <string name="checkbox">Checkbox:</string>
     <string name="ringtone">Ringtone:</string>
     <string name="title_activity_service__sync">Service_Sync</string>
-
-    <!-- Tracking Data -->
-    <string name="MIXPANEL_TOKEN_LIVE"></string>
-    <string name="MIXPANEL_TOKEN_DEV">397f0ee34a7e7ec026aa98d7ee7ea0e7</string>
-    <string name="title_activity_summary">SummaryActivity</string>
-    <string name="title_activity_new_reminder">NewReminderActivity</string>
-    <string name="hello_world">Hello world!</string>
 
 
     <!-- Funf specific -->
@@ -144,7 +143,6 @@
     <string name="started_waiting">GPS started, waiting for fix</string>
     <string name="gps_stopped">GPS paused</string>
     <string name="stopped">Stopped</string>
-
 
 
 </resources>
