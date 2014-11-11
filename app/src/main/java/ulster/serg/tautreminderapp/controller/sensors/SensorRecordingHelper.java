@@ -67,7 +67,7 @@ public class SensorRecordingHelper {
     }
 
     private long getReminderRecordingWindowTotalInMillis() {
-        final long oneMinuteMs = 60000L;
+        final long oneMinuteMs = 60000L; //60 seconds
         long preWindowMs = preReminderRecordingWindow * oneMinuteMs;
         long postRecordingMs = postReminderRecordingWindow * oneMinuteMs;
         return preWindowMs + postRecordingMs;

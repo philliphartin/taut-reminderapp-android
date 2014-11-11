@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import ulster.serg.tautreminderapp.controller.MyApplication;
+
 /**
  * Created by philliphartin on 10/01/2014.
  */
@@ -57,15 +59,16 @@ public class ServiceSensorRecordingWindow extends Service {
 
 
     private void startServices() {
-        serviceController.startLoggingServices(getApplicationContext());
+        serviceController.startLoggingServices(MyApplication.getContext());
     }
 
     private void stopServices() {
-        serviceController.stopLoggingServices(getApplicationContext());
+        serviceController.stopLoggingServices(MyApplication.getContext());
     }
 
 
     protected void senseWithParameters(final long duration) {
+
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -88,6 +91,8 @@ public class ServiceSensorRecordingWindow extends Service {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                stopServices();
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

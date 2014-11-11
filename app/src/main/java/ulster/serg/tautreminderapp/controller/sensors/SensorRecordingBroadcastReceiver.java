@@ -23,7 +23,9 @@ public class SensorRecordingBroadcastReceiver extends BroadcastReceiver {
         // Getting reminder object and extras from intent
         Bundle extras = intent.getExtras();
         String reminderID = extras.getString("reminderIdentifier");
+        long reminderRecordingWindowTotal = extras.getLong("reminderRecordingWindowTotal");
         Log.d(LOG, "SensorRecordingBroadcastReceiver fired for reminder: " + reminderID);
+        Log.d(LOG, "SensorRecordingBroadcastReceiver recording for : " + reminderRecordingWindowTotal + " milliseconds");
 
         //registerPullSensorRecorder(context, intent);
         registerLegacyRecorder(context, extras);
