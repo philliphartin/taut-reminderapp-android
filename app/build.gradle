@@ -8,8 +8,8 @@ android {
         applicationId "ulster.serg.tautreminderapp"
         minSdkVersion 15
         targetSdkVersion 20
-        versionCode 4
-        versionName "1.21"
+        versionCode 7
+        versionName "1.3.1"
     }
     signingConfigs {
         release {
@@ -21,12 +21,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "MIXPANEL_TOKEN", '"397f0ee34a7e7ec026aa98d7ee7ea0e7"'
+            versionNameSuffix "-debug"
+        }
         release {
+            buildConfigField "String", "MIXPANEL_TOKEN", '"8d3aa1e2b24d6efc9fc1ed5eb2014b92"'
             signingConfig signingConfigs.release
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {

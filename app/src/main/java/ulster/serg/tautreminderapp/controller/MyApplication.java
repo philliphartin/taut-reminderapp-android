@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -14,6 +15,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.util.HashMap;
 
+import ulster.serg.tautreminderapp.BuildConfig;
 import ulster.serg.tautreminderapp.R;
 
 /**
@@ -39,6 +41,8 @@ public class MyApplication extends SugarApp {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Log.i(getClass().getSimpleName(), "BuildType: : " + BuildConfig.BUILD_TYPE);
 
         JodaTimeAndroid.init(this);
 
@@ -92,9 +96,11 @@ public class MyApplication extends SugarApp {
     public synchronized MixpanelAPI getMixPanelAnalyticsTracker(TrackerName trackerName) {
         if (!mMixpanels.containsKey(trackerName)) {
 
+            //Get Tracker Token for build
+            String mixpanel_token = BuildConfig.MIXPANEL_TOKEN;
+
             //Setup MixPanel Instance
-            String token = getString(ulster.serg.tautreminderapp.R.string.MIXPANEL_TOKEN_DEV);
-            MixpanelAPI mMixpanel = MixpanelAPI.getInstance(this, token);
+            MixpanelAPI mMixpanel = MixpanelAPI.getInstance(this, mixpanel_token);
             mMixpanels.put(trackerName, mMixpanel);
             mMixpanel.logPosts();
         }

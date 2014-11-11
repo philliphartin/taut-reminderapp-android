@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Tracking Data -->
-    <string name="MIXPANEL_TOKEN_LIVE"></string>
+    <string name="MIXPANEL_TOKEN_LIVE">8d3aa1e2b24d6efc9fc1ed5eb2014b92</string>
     <string name="MIXPANEL_TOKEN_DEV">397f0ee34a7e7ec026aa98d7ee7ea0e7</string>
 
     <!-- Base App -->
