@@ -44,6 +44,7 @@ public class RemoteDatabaseClient {
 
     public void postAcknowledgementLogsLegacy(RequestParams params, AsyncHttpResponseHandler responseHandler) {
         String absoluteURL = getAbsoluteUrl();
+        Log.d(LOG, "Posting to: " + absoluteURL);
         client.post(absoluteURL, params, responseHandler);
     }
 
